@@ -153,6 +153,63 @@ function binaryencodingconstraints(
         codeselect[a,m] == sum(codes[n][m]*assign[a,n] for n in 1:bt.nnodes))
 end
 
+# warning: lots of magic constants here
+function printtree(tp::TreeProblem)
+
+    const pd = tp.pd
+    const bt = tp.bt
+    const depth = bt.depth
+
+    spaces = Dict(zip(0:depth, [3 for i in 0:depth]))
+    for d=(depth-1):-1:0
+        spaces[d] = 2*spaces[d+1]+1
+    end
+    for d=0:depth
+        nodes = getnodes(bt,d)
+        for n in nodes 
+            print(" "^spaces[d])
+            nodeassign = round.(JuMP.getvalue(tp.assign[:,n]))
+            if sum(nodeassign) < 1 
+                str = "()"
+            else 
+                str = pd.pops[findfirst(nodeassign)][1:2]
+            end
+            @printf("%2s", str)
+            print(" "^spaces[d])
+        end
+        println()
+        if d < depth 
+            for n in nodes 
+                print(" "^(spaces[d]-2), " /"," "^2,"\\ "," "^(spaces[d]-2))
+            end
+            println()
+            for n in nodes 
+                weight1 = JuMP.getvalue(tp.weight[(n,getchildren(bt,n)[1])])
+                weight2 = JuMP.getvalue(tp.weight[(n,getchildren(bt,n)[2])])
+                print(" "^(spaces[d]-3))
+                if round(weight1) > 0
+                    @printf("%3.0f", weight1)
+                else 
+                    @printf("%3s", " ")
+                end
+                print(" "^2)
+                if round(weight2) > 0
+                    @printf("%3.0f", weight2)
+                else 
+                    @printf("%3s", " ")
+                end
+                print(" "^(spaces[d]-3))
+            end
+            println()
+            for n in nodes 
+                print(" "^(spaces[d]-2),"/ "," "^2," \\"," "^(spaces[d]-2))
+            end
+            println()
+        end  
+    end
+
+end
+
 function Base.show(io::IO, tp::TreeProblem; offset::String="")
     println(io, offset, string(typeof(tp)))
 end
