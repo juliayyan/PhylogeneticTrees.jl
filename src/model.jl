@@ -22,10 +22,10 @@ function TreeProblem(
 
     tree = JuMP.Model(solver=solver)
     JuMP.@variable(tree, assign[1:npop,1:nnodes], Bin)
-    JuMP.@variable(tree, assign2[a=1:npop,b=a:npop,othernodes,othernodes], Bin)
+    JuMP.@variable(tree, assign2[a=1:npop,b=a:npop,othernodes,othernodes])
     JuMP.@variable(tree, weight[edges] >= 0)
     JuMP.@variable(tree, f3formula[a=1:npop,b=a:npop,u=othernodes,v=othernodes] >= 0)
-    JuMP.@variable(tree, f3err[a=1:npop,b=a:npop] >= 0)
+    JuMP.@variable(tree, f3err[a=1:npop,b=a:npop])
  
     validtreeconstraints(pd, bt, tree, assign, outgroupnode)
     logicalconstraints(pd, bt, tree, assign, assign2, outgroupnode)
