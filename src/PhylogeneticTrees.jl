@@ -4,4 +4,5 @@ module PhylogeneticTrees
 
     include("tree.jl")
     include("popdata.jl")
+    include("model.jl")
 end
