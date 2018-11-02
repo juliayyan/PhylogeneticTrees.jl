@@ -1,16 +1,18 @@
 mutable struct BinaryTree
     depth::Int
     nnodes::Int
+    edges::Vector{Tuple{Int,Int}}
     pathedges::Dict{Tuple{Int,Int},Vector{Tuple{Int,Int}}}
 end 
 
 function BinaryTree(depth::Int) 
     nnodes = 2^(depth+1)-1
+    edges = Tuple{Int,Int}[]
     bt = BinaryTree(depth, nnodes, 
+        edges,
         Dict{Tuple{Int,Int},Vector{Tuple{Int,Int}}}())
 
     g = LightGraphs.Graph(nnodes)
-    edges = Tuple{Int,Int}[]
     for d=0:(depth-1), n in getnodes(bt, d), c in getchildren(bt,n)
         push!(edges, (n,c))
         LightGraphs.add_edge!(g, (n,c))

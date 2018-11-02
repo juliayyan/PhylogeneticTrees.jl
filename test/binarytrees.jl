@@ -15,6 +15,7 @@ module BinaryTreeTests
         bt4 = PhylogeneticTrees.BinaryTree(4)
         @test bt4.depth == 4
         @test bt4.nnodes == 31
+        @test length(bt4.edges) == 30
         @test !PhylogeneticTrees.validnode(bt4,0)
         @test PhylogeneticTrees.validnode(bt4,31)
         @test PhylogeneticTrees.validlayer(bt4,0)
