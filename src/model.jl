@@ -21,7 +21,7 @@ function TreeProblem(
     const othernodes = setdiff(2:nnodes, outgroupnode)
 
     tree = JuMP.Model(solver=solver)
-    JuMP.@variable(tree, assign[1:npop,1:nnodes], Bin)
+    JuMP.@variable(tree, assign[1:npop,1:nnodes], Bin) # switch to >= 0 if binary encoding
     JuMP.@variable(tree, assign2[a=1:npop,b=a:npop,othernodes,othernodes])
     JuMP.@variable(tree, weight[edges] >= 0)
     JuMP.@variable(tree, f3formula[a=1:npop,b=a:npop,u=othernodes,v=othernodes] >= 0)
@@ -147,9 +147,9 @@ function binaryencodingconstraints(
         rst
     end
     codes = [flatten(code) for code in codes]
-    JuMP.@variable(tree, codeselect[1:pd.npop,1:dim], Bin)
+    JuMP.@variable(tree, codeselect[1:pd.npop,1:(dim+1)], Bin)
     JuMP.@constraint(tree, 
-        [a=1:pd.npop,m=1:dim], 
+        [a=1:pd.npop,m=1:(dim+1)], 
         codeselect[a,m] == sum(codes[n][m]*assign[a,n] for n in 1:bt.nnodes))
 end
 
