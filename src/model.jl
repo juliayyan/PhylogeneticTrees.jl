@@ -1,6 +1,7 @@
 mutable struct TreeProblem
     pd::PopulationData
     bt::BinaryTree
+    outgroupnode::Int
     model::JuMP.Model
     assign::Matrix{JuMP.Variable}
     assign2::JuMP.JuMPDict{JuMP.Variable,4}
@@ -36,7 +37,7 @@ function TreeProblem(
         sum(pd.cov[a1,b1,a2,b2]*f3err[a1,b1]*f3err[a2,b2] 
             for a1 in 1:npop, a2 in 1:npop, b1 in a1:npop, b2 in a2:npop))
 
-    TreeProblem(pd, bt, tree, assign, assign2, weight, f3formula, f3err)
+    TreeProblem(pd, bt, outgroupnode, tree, assign, assign2, weight, f3formula, f3err)
 end
 
 function validtreeconstraints(
