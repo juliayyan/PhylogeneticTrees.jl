@@ -1,6 +1,8 @@
 module PhylogeneticTrees
 
-    import JuMP, Gurobi, CSV, LightGraphs, Iterators, DataFrames
+    import JuMP, Gurobi, MathProgBase
+    import LightGraphs
+    import CSV, Iterators, DataFrames
 
     include("tree.jl")
     include("popdata.jl")

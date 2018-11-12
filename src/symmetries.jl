@@ -36,3 +36,17 @@ function breaksymmetries(tp::TreeProblem;
         JuMP.addlazycallback(tp.model, addalphabetizerule)
     end
 end
+
+function removesolution(
+    tp::TreeProblem,
+    solution::Matrix{Float64})
+    expr = 0
+    for a in 1:tp.pd.npop, n in 1:tp.bt.nnodes
+        if solution[a,n] > 0
+            expr += tp.assign[a,n]
+        else 
+            expr += (1-tp.assign[a,n])
+        end
+    end
+    JuMP.@constraint(tp.model, expr <= JuMP.getvalue(expr)-1)
+end
