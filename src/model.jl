@@ -3,11 +3,11 @@ mutable struct TreeProblem
     bt::BinaryTree
     outgroupnode::Int
     model::JuMP.Model
-    assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}}
-    assign2::JuMP.JuMPDict{JuMP.Variable,4}
-    weight::JuMP.JuMPArray{JuMP.Variable,1,Tuple{Array{Tuple{Int64,Int64},1}}}
-    f3formula::JuMP.JuMPDict{JuMP.Variable,4}
-    f3err::JuMP.JuMPDict{JuMP.Variable,2}
+    assign::JuMP.JuMPArray{JuMP.Variable}
+    assign2::JuMP.JuMPDict{JuMP.Variable}
+    weight::JuMP.JuMPArray{JuMP.Variable}
+    f3formula::JuMP.JuMPDict{JuMP.Variable}
+    f3err::JuMP.JuMPDict{JuMP.Variable}
 end 
 
 function TreeProblem(
@@ -50,7 +50,7 @@ function validtreeconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}},
+    assign::JuMP.JuMPArray{JuMP.Variable},
     outgroupnode::Int)
 
     const npop = pd.npop
@@ -67,8 +67,8 @@ function logicalconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}},
-    assign2::JuMP.JuMPDict{JuMP.Variable,4},
+    assign::JuMP.JuMPArray{JuMP.Variable},
+    assign2::JuMP.JuMPDict{JuMP.Variable},
     outgroupnode::Int
     )
 
@@ -88,10 +88,10 @@ function errorconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign2::JuMP.JuMPDict{JuMP.Variable,4},
-    weight::JuMP.JuMPArray{JuMP.Variable,1,Tuple{Array{Tuple{Int64,Int64},1}}},
-    f3formula::JuMP.JuMPDict{JuMP.Variable,4},
-    f3err::JuMP.JuMPDict{JuMP.Variable,2},
+    assign2::JuMP.JuMPDict{JuMP.Variable},
+    weight::JuMP.JuMPArray{JuMP.Variable},
+    f3formula::JuMP.JuMPDict{JuMP.Variable},
+    f3err::JuMP.JuMPDict{JuMP.Variable},
     outgroupnode::Int)
 
     const npop   = pd.npop
@@ -124,7 +124,7 @@ function binaryencodingconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model,
-    assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}})
+    assign::JuMP.JuMPArray{JuMP.Variable})
     const leaves = getnodes(bt,bt.depth)
     codes = 0:1
     dim = bt.depth

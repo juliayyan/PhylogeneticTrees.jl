@@ -38,7 +38,7 @@ end
 
 function removesolution(
     tp::TreeProblem,
-    solution::JuMP.JuMPArray{Float64,2,Tuple{UnitRange{Int64},UnitRange{Int64}}})
+    solution::JuMP.JuMPArray{Float64})
     expr = 0
     for a in 1:tp.pd.npop, n in getnodes(tp.bt, tp.bt.depth)
         if solution[a,n] > 0
