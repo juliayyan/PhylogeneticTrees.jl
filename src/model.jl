@@ -14,6 +14,7 @@ function TreeProblem(
     pd::PopulationData, 
     bt::BinaryTree;
     outgroupnode::Int = 2^bt.depth,
+    binaryencoding::Bool = false,
     solver = Gurobi.GurobiSolver())
     
     @assert in(outgroupnode, getnodes(bt,bt.depth))
@@ -23,7 +24,11 @@ function TreeProblem(
     const othernodes = setdiff(getnodes(bt,bt.depth), outgroupnode)
 
     tree = JuMP.Model(solver=solver)
-    JuMP.@variable(tree, assign[1:npop,getnodes(bt,bt.depth)], Bin) # switch to >= 0 if binary encoding
+    if !binaryencoding
+        JuMP.@variable(tree, assign[1:npop,getnodes(bt,bt.depth)], Bin)
+    else 
+        JuMP.@variable(tree, assign[1:npop,getnodes(bt,bt.depth)] >= 0)
+    end
     JuMP.@variable(tree, assign2[a=1:npop,b=a:npop,othernodes,othernodes])
     JuMP.@variable(tree, weight[edges] >= 0)
     JuMP.@variable(tree, f3formula[a=1:npop,b=a:npop,u=othernodes,v=othernodes] >= 0)
@@ -32,7 +37,7 @@ function TreeProblem(
     validtreeconstraints(pd, bt, tree, assign, outgroupnode)
     logicalconstraints(pd, bt, tree, assign, assign2, outgroupnode)
     errorconstraints(pd, bt, tree, assign2, weight, f3formula, f3err, outgroupnode)
-    #binaryencodingconstraints(pd, bt, tree, assign)
+    binaryencoding && binaryencodingconstraints(pd, bt, tree, assign)
 
     JuMP.@objective(tree, Min, 
         sum(pd.cov[a1,b1,a2,b2]*f3err[a1,b1]*f3err[a2,b2] 
@@ -52,7 +57,7 @@ function validtreeconstraints(
     
     # one-to-one assignment
     JuMP.@constraint(tree, [a=1:npop], sum(assign[a,getnodes(bt,bt.depth)]) == 1)
-    JuMP.@constraint(tree, [n=getnodes(bt,bt.depth)], sum(assign[1:npop,n])   <= 1)
+    JuMP.@constraint(tree, [n=getnodes(bt,bt.depth)], sum(assign[1:npop,n]) <= 1)
     # assign outgroup to a node
     JuMP.@constraint(tree, assign[pd.outgroup,outgroupnode] == 1)
 
@@ -120,9 +125,10 @@ function binaryencodingconstraints(
     bt::BinaryTree,
     tree::JuMP.Model,
     assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}})
+    const leaves = getnodes(bt,bt.depth)
     codes = 0:1
     dim = bt.depth
-    for d in 1:dim 
+    for d in 1:(dim-1) 
         codes = collect(Iterators.product(codes,0:1))
     end
     function flatten(arr)
@@ -139,7 +145,7 @@ function binaryencodingconstraints(
     JuMP.@variable(tree, codeselect[1:pd.npop,1:dim], Bin)
     JuMP.@constraint(tree, 
         [a=1:pd.npop,m=1:dim], 
-        codeselect[a,m] == sum(codes[n][m]*assign[a,n] for n in getnodes(bt,bt.depth)))
+        codeselect[a,m] == sum(codes[i][m]*assign[a,leaves[i]] for i in 1:length(leaves)))
 end
 
 # warning: lots of magic constants here

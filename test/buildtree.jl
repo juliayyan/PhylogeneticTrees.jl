@@ -19,15 +19,22 @@ module BuildTree
     		)
 
         bt = PhylogeneticTrees.BinaryTree(3)
-        tp = PhylogeneticTrees.TreeProblem(pd, bt, 
+        tp = PhylogeneticTrees.TreeProblem(pd, bt,
+            binaryencoding = true, # this slows it down significantly but is just to test 
             solver = GurobiSolver(OutputFlag = 0))
         PhylogeneticTrees.breaksymmetries(tp, rules = [:leftfirst, :alphabetize])
         @time solve(tp.model)
-        #   1.312929 seconds (6.95 k allocations: 3.191 MiB)
+        #   7.439728 seconds (6.95 k allocations: 3.191 MiB)
 
         leaves = PhylogeneticTrees.getnodes(bt, bt.depth)
+
+        # test integrality
+        for a in 1:pd.npop, u in leaves 
+            @test isapprox(getvalue(tp.assign[a,u]), 1) || isapprox(getvalue(tp.assign[a,u]), 0)
+        end
+
         xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:])))] for a in 1:pd.npop] 
-        
+
         @test isapprox(round(getvalue(tp.f3formula[1,1,xval[1],xval[1]])), 482)
         @test isapprox(round(getvalue(tp.f3formula[1,2,xval[1],xval[2]])), 33)
         @test isapprox(round(getvalue(tp.f3formula[2,2,xval[2],xval[2]])), 242)
