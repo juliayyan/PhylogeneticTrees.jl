@@ -24,7 +24,7 @@ module BuildTree
             solver = GurobiSolver(OutputFlag = 0))
         PhylogeneticTrees.breaksymmetries(tp, rules = [:leftfirst, :alphabetize])
         @time solve(tp.model)
-        #   7.439728 seconds (6.95 k allocations: 3.191 MiB)
+        # 7.439728 seconds (6.95 k allocations: 3.191 MiB)
 
         leaves = PhylogeneticTrees.getnodes(bt, bt.depth)
 
@@ -47,6 +47,15 @@ module BuildTree
         end
 
         @test isapprox(getobjectivevalue(tp.model), 302.06620671623)
+
+        PhylogeneticTrees.removesolution(tp, getvalue(tp.assign))
+        @time solve(tp.model)
+        # 9.853002 seconds (15.53 k allocations: 1.838 MiB)
+        @test isapprox(getobjectivevalue(tp.model), 302.06620671623) # symmetric solution
+        PhylogeneticTrees.removesolution(tp, getvalue(tp.assign))
+        @time solve(tp.model)
+        @test isapprox(getobjectivevalue(tp.model), 545.6614084929685) # new solution
+        # 9.610726 seconds (12.60 k allocations: 1.366 MiB)
 
     end
 
