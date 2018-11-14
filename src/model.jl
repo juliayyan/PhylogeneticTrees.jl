@@ -3,7 +3,7 @@ mutable struct TreeProblem
     bt::BinaryTree
     outgroupnode::Int
     model::JuMP.Model
-    assign::Matrix{JuMP.Variable}
+    assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}}
     assign2::JuMP.JuMPDict{JuMP.Variable,4}
     weight::JuMP.JuMPArray{JuMP.Variable,1,Tuple{Array{Tuple{Int64,Int64},1}}}
     f3formula::JuMP.JuMPDict{JuMP.Variable,4}
@@ -12,17 +12,18 @@ end
 
 function TreeProblem(
     pd::PopulationData, 
-    bt::BinaryTree,
-    outgroupnode::Int;
+    bt::BinaryTree;
+    outgroupnode::Int = 2^bt.depth,
     solver = Gurobi.GurobiSolver())
+    
+    @assert in(outgroupnode, getnodes(bt,bt.depth))
 
     const npop   = pd.npop
-    const nnodes = bt.nnodes
     const edges  = bt.edges
-    const othernodes = setdiff(2:nnodes, outgroupnode)
+    const othernodes = setdiff(getnodes(bt,bt.depth), outgroupnode)
 
     tree = JuMP.Model(solver=solver)
-    JuMP.@variable(tree, assign[1:npop,1:nnodes], Bin) # switch to >= 0 if binary encoding
+    JuMP.@variable(tree, assign[1:npop,getnodes(bt,bt.depth)], Bin) # switch to >= 0 if binary encoding
     JuMP.@variable(tree, assign2[a=1:npop,b=a:npop,othernodes,othernodes])
     JuMP.@variable(tree, weight[edges] >= 0)
     JuMP.@variable(tree, f3formula[a=1:npop,b=a:npop,u=othernodes,v=othernodes] >= 0)
@@ -44,22 +45,14 @@ function validtreeconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign::Matrix{JuMP.Variable},
+    assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}},
     outgroupnode::Int)
 
-    const npop   = pd.npop
-    const nnodes = bt.nnodes
+    const npop = pd.npop
     
-    # nothing at root
-    JuMP.@constraint(tree, sum(assign[1:npop,1]) == 0)
     # one-to-one assignment
-    JuMP.@constraint(tree, [a=1:npop],   sum(assign[a,1:nnodes]) == 1)
-    JuMP.@constraint(tree, [n=1:nnodes], sum(assign[1:npop,n])   <= 1)
-    # populations are only assigned to leaf nodes
-    JuMP.@constraint(tree, [d=0:(bt.depth-1),
-                            n=getnodes(bt,d),
-                            c=getdescendants(bt,n)], 
-        sum(assign[1:npop,c]) <= 1-sum(assign[1:npop,n]))
+    JuMP.@constraint(tree, [a=1:npop], sum(assign[a,getnodes(bt,bt.depth)]) == 1)
+    JuMP.@constraint(tree, [n=getnodes(bt,bt.depth)], sum(assign[1:npop,n])   <= 1)
     # assign outgroup to a node
     JuMP.@constraint(tree, assign[pd.outgroup,outgroupnode] == 1)
 
@@ -69,14 +62,13 @@ function logicalconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign::Matrix{JuMP.Variable},
+    assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}},
     assign2::JuMP.JuMPDict{JuMP.Variable,4},
     outgroupnode::Int
     )
 
     const npop   = pd.npop
-    const nnodes = bt.nnodes
-    const othernodes = setdiff(2:nnodes, outgroupnode)
+    const othernodes = setdiff(getnodes(bt,bt.depth), outgroupnode)
     
     JuMP.@constraint(tree, [a=1:npop,b=a:npop,u=othernodes,v=othernodes],
         assign2[a,b,u,v] <= assign[a,u])
@@ -98,8 +90,7 @@ function errorconstraints(
     outgroupnode::Int)
 
     const npop   = pd.npop
-    const nnodes = bt.nnodes
-    const othernodes = setdiff(2:nnodes, outgroupnode)
+    const othernodes = setdiff(getnodes(bt,bt.depth), outgroupnode)
     const bigm = maximum(pd.f3)*2
 
     JuMP.@expression(tree,
@@ -128,10 +119,7 @@ function binaryencodingconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model,
-    assign::Matrix{JuMP.Variable})
-    # speedup attempts
-    # symmetry breaking constraints don't seem to be helpful
-    # preventing chains of unweighted edges doesn't seem to be helpful
+    assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}})
     codes = 0:1
     dim = bt.depth
     for d in 1:dim 
@@ -148,10 +136,10 @@ function binaryencodingconstraints(
         rst
     end
     codes = [flatten(code) for code in codes]
-    JuMP.@variable(tree, codeselect[1:pd.npop,1:(dim+1)], Bin)
+    JuMP.@variable(tree, codeselect[1:pd.npop,1:dim], Bin)
     JuMP.@constraint(tree, 
-        [a=1:pd.npop,m=1:(dim+1)], 
-        codeselect[a,m] == sum(codes[n][m]*assign[a,n] for n in 1:bt.nnodes))
+        [a=1:pd.npop,m=1:dim], 
+        codeselect[a,m] == sum(codes[n][m]*assign[a,n] for n in getnodes(bt,bt.depth)))
 end
 
 # warning: lots of magic constants here
@@ -169,7 +157,11 @@ function printtree(tp::TreeProblem)
         nodes = getnodes(bt,d)
         for n in nodes 
             print(" "^spaces[d])
-            nodeassign = round.(JuMP.getvalue(tp.assign[:,n]))
+            if d == depth
+                nodeassign = round.(JuMP.getvalue(tp.assign[:,n]))
+            else 
+                nodeassign = 0
+            end
             if sum(nodeassign) < 1 
                 str = "()"
             else 
