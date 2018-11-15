@@ -61,10 +61,19 @@ function validtreeconstraints(
     const levels = 1:nlevels
 
     # one-to-one assignment
-    JuMP.@constraint(tree, [a=1:npop], sum(assign[a,getnodes(bt,bt.depth),levels]) == nlevels)
-    JuMP.@constraint(tree, [n=getnodes(bt,bt.depth)], sum(assign[1:npop,n,1]) <= 1)
+    JuMP.@constraint(tree, 
+        [a=1:npop], 
+        sum(assign[a,getnodes(bt,bt.depth),levels]) == nlevels)
+    JuMP.@constraint(tree, 
+        [n=getnodes(bt,bt.depth)], 
+        sum(assign[1:npop,n,1]) <= 1)
+    JuMP.@constraint(tree, 
+        [a=1:npop,n=getnodes(bt,bt.depth),l=2:nlevels], 
+        assign[a,n,l] <= assign[a,n,l-1])
     # assign outgroup to a node
-    JuMP.@constraint(tree, [l=levels], assign[pd.outgroup,outgroupnode,l] == 1)
+    JuMP.@constraint(tree, 
+        [l=levels], 
+        assign[pd.outgroup,outgroupnode,l] == 1)
 
 end
 
