@@ -93,9 +93,9 @@ function logicalconstraints(
     JuMP.@constraint(tree, [a=1:npop,b=a:npop,u=othernodes,v=othernodes,l=levels,m=levels],
         assign2[a,b,u,v,l,m] <= assign[a,u,l])
     JuMP.@constraint(tree, [a=1:npop,b=a:npop,u=othernodes,v=othernodes,l=levels,m=levels],
-        assign2[a,b,u,v,l,m] <= assign[b,v,l])
+        assign2[a,b,u,v,l,m] <= assign[b,v,m])
     JuMP.@constraint(tree, [a=1:npop,b=a:npop,u=othernodes,v=othernodes,l=levels,m=levels],
-        assign2[a,b,u,v,l,m] >= assign[a,u,l] + assign[b,v,l] - 1)
+        assign2[a,b,u,v,l,m] >= assign[a,u,l] + assign[b,v,m] - 1)
 
 end 
 
