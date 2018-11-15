@@ -29,9 +29,11 @@ function breaksymmetries(tp::TreeProblem;
         end    
     end
     if in(:leftfirst, rules)
+        tp.nlevels > 1 && warning("Not tested for admixture")
         JuMP.addlazycallback(tp.model, addleftfirstrule)
     end
     if in(:alphabetize, rules)
+        tp.nlevels > 1 && warning("Not tested for admixture")
         JuMP.addlazycallback(tp.model, addalphabetizerule)
     end
 end
