@@ -183,6 +183,13 @@ function warmstartunmixed(tp::TreeProblem;
     end
 end
 
+function printnodes(tp::TreeProblem)
+    for u in getnodes(tp.bt, tp.bt.depth), a in 1:tp.pd.npop
+        level = round(sum(JuMP.getvalue(tp.assign[a,u,:])))/tp.nlevels
+        level > 0 && println(tp.pd.pops[a][1:2], "\t", u, "\t", level)
+    end
+end
+
 # warning: lots of magic constants here
 function printtree(tp::TreeProblem)
 
