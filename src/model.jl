@@ -184,6 +184,18 @@ function warmstartunmixed(tp::TreeProblem;
     end
 end
 
+# fixes population a to be un-admixed
+function unmix(tp::TreeProblem, a::Int)
+    JuMP.@constraint(tp.model, sum(tp.assign[a,:,1]) == 1)
+end
+
+# fixes population a to node u
+function fix(tp::TreeProblem, a::Int, u::Int)
+    JuMP.@constraint(tp.model, 
+        [l=1:tp.nlevels],
+        tp.assign[a,u,l] == 1)
+end
+
 function printnodes(tp::TreeProblem)
     for u in getnodes(tp.bt, tp.bt.depth), a in 1:tp.pd.npop
         level = round(sum(JuMP.getvalue(tp.assign[a,u,:])))/tp.nlevels
