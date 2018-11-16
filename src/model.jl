@@ -20,6 +20,7 @@ function TreeProblem(
     solver = Gurobi.GurobiSolver())
     
     @assert in(outgroupnode, getnodes(bt,bt.depth))
+    @assert !binaryencoding || (nlevels == 1)
 
     const npop   = pd.npop
     const edges  = bt.edges
