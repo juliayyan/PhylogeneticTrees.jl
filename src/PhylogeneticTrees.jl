@@ -7,5 +7,6 @@ module PhylogeneticTrees
     include("tree.jl")
     include("popdata.jl")
     include("model.jl")
+    include("codedmodel.jl")
     include("symmetries.jl")
 end

@@ -91,6 +91,10 @@ function getdescendants(bt::BinaryTree, node::Int)
     return descendants
 end
 
+function getsubtreeleaves(bt::BinaryTree, node::Int)
+    return intersect(vcat(node,getdescendants(bt, node)), getleaves(bt))
+end
+
 function getedge(bt::BinaryTree, u::Int, v::Int)
     @assert validnode(bt, u)
     @assert validnode(bt, v)
