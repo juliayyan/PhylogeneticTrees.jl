@@ -148,27 +148,13 @@ function binaryencodingconstraints(
     bt::BinaryTree,
     tree::JuMP.Model,
     assign::JuMP.JuMPArray{JuMP.Variable})
-    const leaves = getnodes(bt,bt.depth)
-    codes = 0:1
+    const leaves = getleaves(bt)
+    codes = bt.codes
     dim = bt.depth
-    for d in 1:(dim-1) 
-        codes = collect(Iterators.product(codes,0:1))
-    end
-    function flatten(arr)
-        rst = Any[]
-        grep(v) =   for x in v
-                    if isa(x, Tuple) 
-                    grep(x) 
-                    else push!(rst, x) end
-                    end
-        grep(arr)
-        rst
-    end
-    codes = [flatten(code) for code in codes]
     JuMP.@variable(tree, codeselect[1:pd.npop,1:dim], Bin)
     JuMP.@constraint(tree, 
         [a=1:pd.npop,m=1:dim], 
-        codeselect[a,m] == sum(codes[i][m]*assign[a,leaves[i],1] for i in 1:length(leaves)))
+        codeselect[a,m] == sum(codes[u][m]*assign[a,u,1] for u in leaves))
 end
 
 function warmstartunmixed(tp::TreeProblem; 
