@@ -3,14 +3,31 @@ mutable struct BinaryTree
     nnodes::Int
     edges::Vector{Tuple{Int,Int}}
     pathedges::Dict{Tuple{Int,Int},Vector{Tuple{Int,Int}}}
+    codes::Vector{Vector{Int}}
 end 
 
 function BinaryTree(depth::Int) 
     nnodes = 2^(depth+1)-1
     edges = Tuple{Int,Int}[]
+    codes = 0:1
+    for d in 1:(depth-1) 
+        codes = collect(Iterators.product(codes,0:1))
+    end
+    function flatten(arr)
+        rst = Any[]
+        grep(v) =   for x in v
+                    if isa(x, Tuple) 
+                    grep(x) 
+                    else push!(rst, x) end
+                    end
+        grep(arr)
+        rst
+    end
+    codes = [reverse(flatten(code)) for code in codes]
     bt = BinaryTree(depth, nnodes, 
         edges,
-        Dict{Tuple{Int,Int},Vector{Tuple{Int,Int}}}())
+        Dict{Tuple{Int,Int},Vector{Tuple{Int,Int}}}(),
+        codes)
 
     g = LightGraphs.Graph(nnodes)
     for d=0:(depth-1), n in getnodes(bt, d), c in getchildren(bt,n)
