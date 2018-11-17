@@ -126,22 +126,8 @@ function binaryencodingconstraints(
     tree::JuMP.Model,
     assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}})
     const leaves = getnodes(bt,bt.depth)
-    codes = 0:1
-    dim = bt.depth
-    for d in 1:(dim-1) 
-        codes = collect(Iterators.product(codes,0:1))
-    end
-    function flatten(arr)
-        rst = Any[]
-        grep(v) =   for x in v
-                    if isa(x, Tuple) 
-                    grep(x) 
-                    else push!(rst, x) end
-                    end
-        grep(arr)
-        rst
-    end
-    codes = [flatten(code) for code in codes]
+    codes = bt.codes
+    dim = length(bt.codes[1])
     JuMP.@variable(tree, codeselect[1:pd.npop,1:dim], Bin)
     JuMP.@constraint(tree, 
         [a=1:pd.npop,m=1:dim], 
