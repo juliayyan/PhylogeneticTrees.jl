@@ -125,13 +125,13 @@ function binaryencodingconstraints(
     bt::BinaryTree,
     tree::JuMP.Model,
     assign::JuMP.JuMPArray{JuMP.Variable,2,Tuple{UnitRange{Int64},UnitRange{Int64}}})
-    const leaves = getnodes(bt,bt.depth)
+    const leaves = getleaves(bt)
     codes = bt.codes
-    dim = length(bt.codes[1])
+    dim = bt.depth
     JuMP.@variable(tree, codeselect[1:pd.npop,1:dim], Bin)
     JuMP.@constraint(tree, 
         [a=1:pd.npop,m=1:dim], 
-        codeselect[a,m] == sum(codes[i][m]*assign[a,leaves[i]] for i in 1:length(leaves)))
+        codeselect[a,m] == sum(codes[u][m]*assign[a,u] for u in leaves))
 end
 
 # warning: lots of magic constants here

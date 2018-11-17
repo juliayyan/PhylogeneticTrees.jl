@@ -9,10 +9,13 @@ end
 function BinaryTree(depth::Int) 
     nnodes = 2^(depth+1)-1
     edges = Tuple{Int,Int}[]
+    allcodes = Any[[-1],[0],[1]]
     codes = 0:1
     for d in 1:(depth-1) 
         codes = collect(Iterators.product(codes,0:1))
+        push!(allcodes, codes)
     end
+    allcodes = vcat(allcodes...)
     function flatten(arr)
         rst = Any[]
         grep(v) =   for x in v
@@ -23,11 +26,11 @@ function BinaryTree(depth::Int)
         grep(arr)
         rst
     end
-    codes = [reverse(flatten(code)) for code in codes]
+    allcodes = [reverse(flatten(code)) for code in allcodes]
     bt = BinaryTree(depth, nnodes, 
         edges,
         Dict{Tuple{Int,Int},Vector{Tuple{Int,Int}}}(),
-        codes)
+        allcodes)
 
     g = LightGraphs.Graph(nnodes)
     for d=0:(depth-1), n in getnodes(bt, d), c in getchildren(bt,n)
@@ -58,6 +61,8 @@ function getnodes(bt::BinaryTree, layer::Int)
     @assert validlayer(bt, layer)
     (2^layer):(2^(layer+1)-1)
 end 
+
+getleaves(bt::BinaryTree) = getnodes(bt, bt.depth)
 
 function getparent(bt::BinaryTree, node::Int)
     @assert validnode(bt, node)
