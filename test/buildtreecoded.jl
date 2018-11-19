@@ -29,24 +29,24 @@ module BuildTreeCoded
 
         # test integrality
         for a in 1:pd.npop, u in leaves 
-            @test isapprox(getvalue(tp.assign[a,u]), 1) || isapprox(getvalue(tp.assign[a,u]), 0)
+            @test isapprox(getvalue(tp.assign[a,u,1]), 1) || isapprox(getvalue(tp.assign[a,u,1]), 0)
         end
         for (a,b,(u,v)) in keys(tp.countedge)
-            @test isapprox(getvalue(tp.countedge[a,b,(u,v)]),1) || 
-                  isapprox(getvalue(tp.countedge[a,b,(u,v)]),0)
+            @test isapprox(getvalue(tp.countedge[a,b,(u,v),1,1]),1) || 
+                  isapprox(getvalue(tp.countedge[a,b,(u,v),1,1]),0)
         end
 
-        xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:])))] for a in 1:pd.npop] 
+        xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])))] for a in 1:pd.npop] 
         @test isapprox(round(getvalue(tp.f3formula[1,1])), 482)
         @test isapprox(round(getvalue(tp.f3formula[1,2])), 33)
         @test isapprox(round(getvalue(tp.f3formula[2,2])), 242)
         for a in 1:pd.npop, b in a:pd.npop, u in leaves, v in leaves 
-            if round(getvalue(tp.assign[a,u]) + getvalue(tp.assign[b,v])) == 2
+            if round(getvalue(tp.assign[a,u,1]) + getvalue(tp.assign[b,v,1])) == 2
                 for (u1,v1) in bt.edges 
                     if in((u1,v1), intersect(bt.pathedges[u,tp.outgroupnode], bt.pathedges[v,tp.outgroupnode]))
-                        @test isapprox(getvalue(tp.countedge[a,b,(u1,v1)]),1)
+                        @test isapprox(getvalue(tp.countedge[a,b,(u1,v1),1,1]),1)
                     else 
-                        @test isapprox(getvalue(tp.countedge[a,b,(u1,v1)]),0)
+                        @test isapprox(getvalue(tp.countedge[a,b,(u1,v1),1,1]),0)
                     end
                 end
             end

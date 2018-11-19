@@ -18,8 +18,8 @@ function TreeProblem(
     nlevels::Int = 1,
     solver = Gurobi.GurobiSolver())
     
-    const npop   = pd.npop
-    const edges  = bt.edges
+    const npop = pd.npop
+    const edges = bt.edges
     const leaves = getleaves(bt)
     const outgroupnode = leaves[1]
     const othernodes = leaves[2:end]
@@ -87,7 +87,7 @@ function logicalconstraints(
     outgroupnode::Int,
     nlevels::Int)
 
-    const npop   = pd.npop
+    const npop = pd.npop
     const othernodes = getleaves(bt)[2:end]
     const levels = 1:nlevels
     
@@ -111,7 +111,7 @@ function errorconstraints(
     outgroupnode::Int,
     nlevels::Int)
 
-    const npop   = pd.npop
+    const npop = pd.npop
     const othernodes = getleaves(bt)[2:end]
     const bigm = maximum(pd.f3)*2
     const levels = 1:nlevels
@@ -163,7 +163,7 @@ function warmstartunmixed(tp::TreeProblem;
     JuMP.solve(tp0.model)
     solution0 = JuMP.getvalue(tp0.assign);
     for a in 1:tp.pd.npop, u in getnodes(tp.bt, tp.bt.depth), l in 1:tp.nlevels 
-        JuMP.setvalue(tp.assign[a,u,l], JuMP.getvalue(tp0.assign[a,u]))
+        JuMP.setvalue(tp.assign[a,u,l], JuMP.getvalue(tp0.assign[a,u,1]))
     end
 end
 
@@ -187,7 +187,7 @@ function printnodes(tp::TreeProblem)
 end
 
 # warning: lots of magic constants here
-function printtree(tp::TreeProblem)
+function printtree(tp::Union{TreeProblem,CodedTreeProblem})
 
     const pd = tp.pd
     const bt = tp.bt
