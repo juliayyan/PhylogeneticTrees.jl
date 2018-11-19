@@ -1,3 +1,4 @@
 include("binarytrees.jl")
 include("buildtree.jl")
-include("buildtreecoded.jl")
+include("buildnodetree.jl")
+include("comparetrees.jl")
