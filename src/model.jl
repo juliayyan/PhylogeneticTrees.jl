@@ -7,7 +7,7 @@ mutable struct TreeProblem
     assign::JuMP.JuMPArray{JuMP.Variable}
     countedge::JuMP.JuMPDict{JuMP.Variable}
     weight::JuMP.JuMPArray{JuMP.Variable}
-    f3formula
+    f3formula::JuMP.JuMPDict{JuMP.GenericAffExpr{Float64,JuMP.Variable}}
     f3err::JuMP.JuMPDict{JuMP.Variable}
 end 
 
@@ -100,7 +100,7 @@ function errorconstraints(pd::PopulationData,
     weight::JuMP.JuMPArray{JuMP.Variable}, 
     weightaux::JuMP.JuMPDict{JuMP.Variable}, 
     countedge::JuMP.JuMPDict{JuMP.Variable}, 
-    f3formula,#::JuMP.JuMPDict{JuMP.Variable}, 
+    f3formula::JuMP.JuMPDict{JuMP.GenericAffExpr{Float64,JuMP.Variable}}, 
     f3err::JuMP.JuMPDict{JuMP.Variable},
     nlevels::Int)
 
