@@ -161,12 +161,11 @@ function warmstartunmixed(tp::TreeProblem;
     timelimit::Int = 30,
     solver = Gurobi.GurobiSolver(OutputFlag = 0, TimeLimit = timelimit))
     @assert tp.nlevels > 1
-    tp0 = TreeProblem(tp.pd, tp.bt, solver = solver)
-    breaksymmetries(tp0)
+    tp0 = CodedTreeProblem(tp.pd, tp.bt, solver = solver)
     JuMP.solve(tp0.model)
     solution0 = JuMP.getvalue(tp0.assign);
     for a in 1:tp.pd.npop, u in getnodes(tp.bt, tp.bt.depth), l in 1:tp.nlevels 
-        JuMP.setvalue(tp.assign[a,u,l], JuMP.getvalue(tp0.assign[a,u,1]))
+        JuMP.setvalue(tp.assign[a,u,l], JuMP.getvalue(tp0.assign[a,u]))
     end
 end
 
