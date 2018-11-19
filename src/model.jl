@@ -60,7 +60,7 @@ function validtreeconstraints(
 
     const npop = pd.npop
     const levels = 1:nlevels
-    const leaves = getnodes(bt,bt.depth)
+    const leaves = getleaves(bt)
     
     # one-to-one assignment
     JuMP.@constraint(tree, 
