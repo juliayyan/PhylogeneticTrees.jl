@@ -19,7 +19,6 @@ function CodedTreeProblem(
     const npop   = pd.npop
     const edges  = bt.edges
     const outgroupnode = getleaves(bt)[1]
-    const othernodes = getleaves(bt)[2:end]
 
     tree = JuMP.Model(solver=solver)
     JuMP.@variable(tree, assign[1:npop,getleaves(bt)] >= 0)
