@@ -14,24 +14,24 @@ end
 function TreeProblem(
     pd::PopulationData, 
     bt::BinaryTree;
-    outgroupnode::Int = 2^bt.depth,
     binaryencoding::Bool = false,
     nlevels::Int = 1,
     solver = Gurobi.GurobiSolver())
     
-    @assert in(outgroupnode, getnodes(bt,bt.depth))
-    @assert !binaryencoding || (nlevels == 1)
-
     const npop   = pd.npop
     const edges  = bt.edges
-    const othernodes = setdiff(getnodes(bt,bt.depth), outgroupnode)
+    const leaves = getleaves(bt)
+    const outgroupnode = leaves[1]
+    const othernodes = leaves[2:end]
     const levels = 1:nlevels
 
     tree = JuMP.Model(solver=solver)
-    if !binaryencoding
-        JuMP.@variable(tree, assign[1:npop,getnodes(bt,bt.depth),levels], Bin)
+    if binaryencoding
+        @assert nlevels == 1
+        JuMP.@variable(tree, assign[1:npop,getleaves(bt),levels] >= 0)
+        binaryencodingconstraints(pd, bt, tree, assign)
     else 
-        JuMP.@variable(tree, assign[1:npop,getnodes(bt,bt.depth),levels] >= 0)
+        JuMP.@variable(tree, assign[1:npop,getleaves(bt),levels], Bin)
     end
     JuMP.@variable(tree, assign2[a=1:npop,b=a:npop,othernodes,othernodes,levels,levels])
     JuMP.@variable(tree, weight[edges] >= 0)
@@ -41,8 +41,7 @@ function TreeProblem(
     validtreeconstraints(pd, bt, tree, assign, outgroupnode, nlevels)
     logicalconstraints(pd, bt, tree, assign, assign2, outgroupnode, nlevels)
     errorconstraints(pd, bt, tree, assign2, weight, f3formula, f3err, outgroupnode, nlevels)
-    binaryencoding && binaryencodingconstraints(pd, bt, tree, assign)
-
+    
     JuMP.@objective(tree, Min, 
         sum(pd.cov[a1,b1,a2,b2]*f3err[a1,b1]*f3err[a2,b2] 
             for a1 in 1:npop, a2 in 1:npop, b1 in a1:npop, b2 in a2:npop))
@@ -67,7 +66,7 @@ function validtreeconstraints(
         [a=1:npop], 
         sum(assign[a,leaves,levels]) == nlevels)
     JuMP.@constraint(tree, 
-        [n=getnodes(bt,bt.depth)], 
+        [n=getleaves(bt)], 
         sum(assign[1:npop,n,1]) <= 1)
     JuMP.@constraint(tree, 
         [a=1:npop,n=leaves,l=2:nlevels], 
@@ -89,7 +88,7 @@ function logicalconstraints(
     nlevels::Int)
 
     const npop   = pd.npop
-    const othernodes = setdiff(getnodes(bt,bt.depth), outgroupnode)
+    const othernodes = getleaves(bt)[2:end]
     const levels = 1:nlevels
     
     JuMP.@constraint(tree, [a=1:npop,b=a:npop,u=othernodes,v=othernodes,l=levels,m=levels],
@@ -113,7 +112,7 @@ function errorconstraints(
     nlevels::Int)
 
     const npop   = pd.npop
-    const othernodes = setdiff(getnodes(bt,bt.depth), outgroupnode)
+    const othernodes = getleaves(bt)[2:end]
     const bigm = maximum(pd.f3)*2
     const levels = 1:nlevels
 
@@ -148,13 +147,12 @@ function binaryencodingconstraints(
     bt::BinaryTree,
     tree::JuMP.Model,
     assign::JuMP.JuMPArray{JuMP.Variable})
-    const leaves = getleaves(bt)
-    codes = bt.codes
-    dim = bt.depth
-    JuMP.@variable(tree, codeselect[1:pd.npop,1:dim], Bin)
+
+    JuMP.@variable(tree, codeselect[1:pd.npop,1:bt.depth], Bin)
     JuMP.@constraint(tree, 
-        [a=1:pd.npop,m=1:dim], 
-        codeselect[a,m] == sum(codes[u][m]*assign[a,u,1] for u in leaves))
+        [a=1:pd.npop,m=1:bt.depth], 
+        codeselect[a,m] == sum(bt.codes[u][m]*assign[a,u,1] for u in getleaves(bt)))
+
 end
 
 function warmstartunmixed(tp::TreeProblem; 
