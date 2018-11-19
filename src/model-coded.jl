@@ -2,6 +2,7 @@ mutable struct CodedTreeProblem
     pd::PopulationData
     bt::BinaryTree
     outgroupnode::Int
+    nlevels::Int
     model::JuMP.Model
     assign::JuMP.JuMPArray{JuMP.Variable}
     countedge::JuMP.JuMPDict{JuMP.Variable}
@@ -48,7 +49,7 @@ function CodedTreeProblem(
             for a1 in 1:npop, a2 in 1:npop, b1 in a1:npop, b2 in a2:npop))
 
     CodedTreeProblem(
-        pd, bt, outgroupnode, 
+        pd, bt, outgroupnode, nlevels,
         tree, 
         assign, countedge, 
         weight, 
@@ -124,8 +125,4 @@ function errorconstraints(pd::PopulationData,
     JuMP.@constraint(tree, [a=1:npop,b=a:npop],
         f3err[a,b] >= f3formula[a,b] - pd.f3[a,b])
 
-end
-
-function Base.show(io::IO, tp::CodedTreeProblem; offset::String="")
-    println(io, offset, string(typeof(tp)))
 end

@@ -155,7 +155,7 @@ function binaryencodingconstraints(
 
 end
 
-function warmstartunmixed(tp::TreeProblem; 
+function warmstartunmixed(tp::Union{TreeProblem,CodedTreeProblem}; 
     timelimit::Int = 30,
     solver = Gurobi.GurobiSolver(OutputFlag = 0, TimeLimit = timelimit))
     @assert tp.nlevels > 1
@@ -168,22 +168,36 @@ function warmstartunmixed(tp::TreeProblem;
 end
 
 # fixes population a to be un-admixed
-function unmix(tp::TreeProblem, a::Int)
+function unmix(tp::Union{TreeProblem,CodedTreeProblem}, a::Int)
     JuMP.@constraint(tp.model, sum(tp.assign[a,:,1]) == 1)
 end
 
 # fixes population a to node u
-function fix(tp::TreeProblem, a::Int, u::Int)
+function fix(tp::Union{TreeProblem,CodedTreeProblem}, a::Int, u::Int)
     JuMP.@constraint(tp.model, 
         [l=1:tp.nlevels],
         tp.assign[a,u,l] == 1)
 end
 
-function printnodes(tp::TreeProblem)
+function printnodes(tp::Union{TreeProblem,CodedTreeProblem})
     for u in getnodes(tp.bt, tp.bt.depth), a in 1:tp.pd.npop
         level = round(sum(JuMP.getvalue(tp.assign[a,u,:])))/tp.nlevels
         level > 0 && println(tp.pd.pops[a][1:2], "\t", u, "\t", level)
     end
+end
+
+function removesolution(
+    tp::Union{TreeProblem,CodedTreeProblem},
+    solution::JuMP.JuMPArray{Float64})
+    expr = 0
+    for a in 1:tp.pd.npop, n in getnodes(tp.bt, tp.bt.depth), l in 1:tp.nlevels
+        if solution[a,n,l] > 0
+            expr += tp.assign[a,n,l]
+        else 
+            expr += (1-tp.assign[a,n,l])
+        end
+    end
+    JuMP.@constraint(tp.model, expr <= JuMP.getvalue(expr)-1)
 end
 
 # warning: lots of magic constants here
@@ -247,6 +261,6 @@ function printtree(tp::Union{TreeProblem,CodedTreeProblem})
 
 end
 
-function Base.show(io::IO, tp::TreeProblem; offset::String="")
+function Base.show(io::IO, tp::Union{TreeProblem,CodedTreeProblem}; offset::String="")
     println(io, offset, string(typeof(tp)))
 end
