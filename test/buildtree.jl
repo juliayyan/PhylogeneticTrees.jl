@@ -1,4 +1,4 @@
-module BuildTree
+module BuildTreeCoded
 
     using PhylogeneticTrees, JuMP, Gurobi
     @static if VERSION < v"0.7.0-DEV.2005"
@@ -7,9 +7,9 @@ module BuildTree
         using Test
     end
 
-    println("=============================")
-    println("Testing node-based tree model")
-    println("=============================")
+    println("========================================")
+    println("Testing tree-building with default model")
+    println("========================================")
 
     @testset "Solving a tree problem" begin
 
@@ -19,12 +19,11 @@ module BuildTree
     		)
 
         bt = PhylogeneticTrees.BinaryTree(3)
-        tp = PhylogeneticTrees.NodeTreeProblem(pd, bt,
-            binaryencoding = true, # this slows it down significantly but is just to test 
-            solver = GurobiSolver(OutputFlag = 0))
-        PhylogeneticTrees.breaksymmetries(tp, rules = [:leftfirst, :alphabetize])
+        tp = PhylogeneticTrees.TreeProblem(pd, bt,
+            solver = GurobiSolver(OutputFlag = 0),
+            binaryencoding = true)
         @time solve(tp.model)
-        # 7.439728 seconds (6.95 k allocations: 3.191 MiB)
+        # 0.403986 seconds (148 allocations: 753.797 KiB)
 
         leaves = PhylogeneticTrees.getnodes(bt, bt.depth)
 
@@ -32,30 +31,28 @@ module BuildTree
         for a in 1:pd.npop, u in leaves 
             @test isapprox(getvalue(tp.assign[a,u,1]), 1) || isapprox(getvalue(tp.assign[a,u,1]), 0)
         end
-
-        xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])))] for a in 1:pd.npop] 
-
-        @test isapprox(round(getvalue(tp.f3formula[1,1,xval[1],xval[1],1,1])), 482)
-        @test isapprox(round(getvalue(tp.f3formula[1,2,xval[1],xval[2],1,1])), 33)
-        @test isapprox(round(getvalue(tp.f3formula[2,2,xval[2],xval[2],1,1])), 242)
-        for a in 1:pd.npop, b in a:pd.npop, u in leaves, v in leaves 
-            u == tp.outgroupnode && continue 
-            v == tp.outgroupnode && continue 
-            xval[a] == u && continue 
-            xval[b] == v && continue 
-            @test isapprox(getvalue(tp.f3formula[a,b,u,v,1,1]), 0)
+        for (a,b,(u,v)) in keys(tp.countedge)
+            @test isapprox(getvalue(tp.countedge[a,b,(u,v),1,1]),1) || 
+                  isapprox(getvalue(tp.countedge[a,b,(u,v),1,1]),0)
         end
 
-        @test isapprox(getobjectivevalue(tp.model), 302.06620671623)
+        xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])))] for a in 1:pd.npop] 
+        @test isapprox(round(getvalue(tp.f3formula[1,1])), 482)
+        @test isapprox(round(getvalue(tp.f3formula[1,2])), 33)
+        @test isapprox(round(getvalue(tp.f3formula[2,2])), 242)
+        for a in 1:pd.npop, b in a:pd.npop, u in leaves, v in leaves 
+            if round(getvalue(tp.assign[a,u,1]) + getvalue(tp.assign[b,v,1])) == 2
+                for (u1,v1) in bt.edges 
+                    if in((u1,v1), intersect(bt.pathedges[u,tp.outgroupnode], bt.pathedges[v,tp.outgroupnode]))
+                        @test isapprox(getvalue(tp.countedge[a,b,(u1,v1),1,1]),1)
+                    else 
+                        @test isapprox(getvalue(tp.countedge[a,b,(u1,v1),1,1]),0)
+                    end
+                end
+            end
+        end        
 
-        PhylogeneticTrees.removesolution(tp, getvalue(tp.assign))
-        @time solve(tp.model)
-        # 9.853002 seconds (15.53 k allocations: 1.838 MiB)
-        @test isapprox(getobjectivevalue(tp.model), 302.06620671623) # symmetric solution
-        PhylogeneticTrees.removesolution(tp, getvalue(tp.assign))
-        @time solve(tp.model)
-        @test isapprox(getobjectivevalue(tp.model), 545.6614084929685) # new solution
-        # 9.610726 seconds (12.60 k allocations: 1.366 MiB)
+        @test isapprox(getobjectivevalue(tp.model), 302.06620671623)
 
     end
 
