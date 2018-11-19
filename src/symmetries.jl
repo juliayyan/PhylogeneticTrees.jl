@@ -1,4 +1,4 @@
-function breaksymmetries(tp::TreeProblem;
+function breaksymmetries(tp::NodeTreeProblem;
     rules::Vector{Symbol} = [:leftfirst])
     bt = tp.bt
     pd = tp.pd

@@ -1,4 +1,4 @@
-mutable struct TreeProblem
+mutable struct NodeTreeProblem
     pd::PopulationData
     bt::BinaryTree
     outgroupnode::Int
@@ -11,7 +11,7 @@ mutable struct TreeProblem
     f3err::JuMP.JuMPDict{JuMP.Variable}
 end 
 
-function TreeProblem(
+function NodeTreeProblem(
     pd::PopulationData, 
     bt::BinaryTree;
     binaryencoding::Bool = false,
@@ -46,7 +46,7 @@ function TreeProblem(
         sum(pd.cov[a1,b1,a2,b2]*f3err[a1,b1]*f3err[a2,b2] 
             for a1 in 1:npop, a2 in 1:npop, b1 in a1:npop, b2 in a2:npop))
 
-    TreeProblem(pd, bt, outgroupnode, nlevels, tree, assign, assign2, weight, f3formula, f3err)
+    NodeTreeProblem(pd, bt, outgroupnode, nlevels, tree, assign, assign2, weight, f3formula, f3err)
 end
 
 function validtreeconstraints(
@@ -155,11 +155,11 @@ function binaryencodingconstraints(
 
 end
 
-function warmstartunmixed(tp::Union{TreeProblem,CodedTreeProblem}; 
+function warmstartunmixed(tp::Union{NodeTreeProblem,TreeProblem}; 
     timelimit::Int = 30,
     solver = Gurobi.GurobiSolver(OutputFlag = 0, TimeLimit = timelimit))
     @assert tp.nlevels > 1
-    tp0 = CodedTreeProblem(tp.pd, tp.bt, solver = solver)
+    tp0 = TreeProblem(tp.pd, tp.bt, solver = solver)
     JuMP.solve(tp0.model)
     solution0 = JuMP.getvalue(tp0.assign);
     for a in 1:tp.pd.npop, u in getnodes(tp.bt, tp.bt.depth), l in 1:tp.nlevels 
@@ -168,18 +168,18 @@ function warmstartunmixed(tp::Union{TreeProblem,CodedTreeProblem};
 end
 
 # fixes population a to be un-admixed
-function unmix(tp::Union{TreeProblem,CodedTreeProblem}, a::Int)
+function unmix(tp::Union{NodeTreeProblem,TreeProblem}, a::Int)
     JuMP.@constraint(tp.model, sum(tp.assign[a,:,1]) == 1)
 end
 
 # fixes population a to node u
-function fix(tp::Union{TreeProblem,CodedTreeProblem}, a::Int, u::Int)
+function fix(tp::Union{NodeTreeProblem,TreeProblem}, a::Int, u::Int)
     JuMP.@constraint(tp.model, 
         [l=1:tp.nlevels],
         tp.assign[a,u,l] == 1)
 end
 
-function printnodes(tp::Union{TreeProblem,CodedTreeProblem})
+function printnodes(tp::Union{NodeTreeProblem,TreeProblem})
     for u in getnodes(tp.bt, tp.bt.depth), a in 1:tp.pd.npop
         level = round(sum(JuMP.getvalue(tp.assign[a,u,:])))/tp.nlevels
         level > 0 && println(tp.pd.pops[a][1:2], "\t", u, "\t", level)
@@ -187,7 +187,7 @@ function printnodes(tp::Union{TreeProblem,CodedTreeProblem})
 end
 
 function removesolution(
-    tp::Union{TreeProblem,CodedTreeProblem},
+    tp::Union{NodeTreeProblem,TreeProblem},
     solution::JuMP.JuMPArray{Float64})
     expr = 0
     for a in 1:tp.pd.npop, n in getnodes(tp.bt, tp.bt.depth), l in 1:tp.nlevels
@@ -201,7 +201,7 @@ function removesolution(
 end
 
 # warning: lots of magic constants here
-function printtree(tp::Union{TreeProblem,CodedTreeProblem})
+function printtree(tp::Union{NodeTreeProblem,TreeProblem})
 
     const pd = tp.pd
     const bt = tp.bt
@@ -261,6 +261,6 @@ function printtree(tp::Union{TreeProblem,CodedTreeProblem})
 
 end
 
-function Base.show(io::IO, tp::Union{TreeProblem,CodedTreeProblem}; offset::String="")
+function Base.show(io::IO, tp::Union{NodeTreeProblem,TreeProblem}; offset::String="")
     println(io, offset, string(typeof(tp)))
 end

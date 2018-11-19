@@ -19,7 +19,7 @@ module BuildTreeCoded
     		)
 
         bt = PhylogeneticTrees.BinaryTree(3)
-        tp = PhylogeneticTrees.CodedTreeProblem(pd, bt,
+        tp = PhylogeneticTrees.TreeProblem(pd, bt,
             solver = GurobiSolver(OutputFlag = 0),
             binaryencoding = true)
         @time solve(tp.model)

@@ -1,4 +1,4 @@
-mutable struct CodedTreeProblem
+mutable struct TreeProblem
     pd::PopulationData
     bt::BinaryTree
     outgroupnode::Int
@@ -11,7 +11,7 @@ mutable struct CodedTreeProblem
     f3err::JuMP.JuMPDict{JuMP.Variable}
 end 
 
-function CodedTreeProblem(
+function TreeProblem(
     pd::PopulationData, 
     bt::BinaryTree;
     binaryencoding::Bool = false,
@@ -48,7 +48,7 @@ function CodedTreeProblem(
         sum(pd.cov[a1,b1,a2,b2]*f3err[a1,b1]*f3err[a2,b2] 
             for a1 in 1:npop, a2 in 1:npop, b1 in a1:npop, b2 in a2:npop))
 
-    CodedTreeProblem(
+    TreeProblem(
         pd, bt, outgroupnode, nlevels,
         tree, 
         assign, countedge, 

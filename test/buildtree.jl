@@ -7,9 +7,9 @@ module BuildTree
         using Test
     end
 
-    println("=====================")
-    println("Testing tree-building")
-    println("=====================")
+    println("=============================")
+    println("Testing node-based tree model")
+    println("=============================")
 
     @testset "Solving a tree problem" begin
 
@@ -19,7 +19,7 @@ module BuildTree
     		)
 
         bt = PhylogeneticTrees.BinaryTree(3)
-        tp = PhylogeneticTrees.TreeProblem(pd, bt,
+        tp = PhylogeneticTrees.NodeTreeProblem(pd, bt,
             binaryencoding = true, # this slows it down significantly but is just to test 
             solver = GurobiSolver(OutputFlag = 0))
         PhylogeneticTrees.breaksymmetries(tp, rules = [:leftfirst, :alphabetize])
