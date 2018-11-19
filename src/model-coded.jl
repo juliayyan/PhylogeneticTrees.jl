@@ -4,7 +4,6 @@ mutable struct CodedTreeProblem
     outgroupnode::Int
     model::JuMP.Model
     assign::JuMP.JuMPArray{JuMP.Variable}
-    codeselect::Matrix{JuMP.Variable}
     countedge::JuMP.JuMPDict{JuMP.Variable}
     weight::JuMP.JuMPArray{JuMP.Variable}
     f3formula
@@ -14,15 +13,25 @@ end
 function CodedTreeProblem(
     pd::PopulationData, 
     bt::BinaryTree;
-    solver = Gurobi.GurobiSolver())
+    solver = Gurobi.GurobiSolver(),
+    binaryencoding::Bool = false)
     
     const npop   = pd.npop
     const edges  = bt.edges
-    const outgroupnode = getleaves(bt)[1]
+    const leaves = getleaves(bt)
+    const outgroupnode = leaves[1]
 
     tree = JuMP.Model(solver=solver)
-    JuMP.@variable(tree, assign[1:npop,getleaves(bt)] >= 0)
-    JuMP.@variable(tree, codeselect[1:pd.npop,1:bt.depth], Bin)
+    if binaryencoding 
+        JuMP.@variable(tree, assign[1:npop,getleaves(bt)] >= 0)
+        JuMP.@variable(tree, codeselect[1:pd.npop,1:bt.depth], Bin)
+        JuMP.@constraint(tree, 
+            [a=1:pd.npop,m=1:bt.depth], 
+            codeselect[a,m] == sum(bt.codes[u][m]*assign[a,u] for u in leaves))
+
+    else 
+        JuMP.@variable(tree, assign[1:npop,getleaves(bt)], Bin)
+    end
     JuMP.@variable(tree, weight[edges] >= 0)
     JuMP.@variable(tree, weightaux[a=1:npop,b=a:npop,edges] >= 0)
     JuMP.@variable(tree, countedge[a=1:npop,b=a:npop,edges] >= 0)
@@ -31,8 +40,8 @@ function CodedTreeProblem(
         sum(weightaux[a,b,edg] for edg in edges))
     JuMP.@variable(tree, f3err[a=1:npop,b=a:npop])
 
-    treecodingconstraints(pd, bt, tree, assign, codeselect, outgroupnode)
-    countedgeconstraints(pd, bt, tree, assign, codeselect, countedge, outgroupnode)
+    validtreeconstraints(pd, bt, tree, assign, outgroupnode)
+    countedgeconstraints(pd, bt, tree, assign, countedge, outgroupnode)
     errorconstraints(pd, bt, tree, weight, weightaux, countedge, f3formula, f3err)
 
     JuMP.@objective(tree, Min, 
@@ -42,33 +51,32 @@ function CodedTreeProblem(
     CodedTreeProblem(
         pd, bt, outgroupnode, 
         tree, 
-        assign, codeselect, countedge, 
+        assign, countedge, 
         weight, 
         f3formula, f3err)
 end
 
-function treecodingconstraints(
+
+function validtreeconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
     assign::JuMP.JuMPArray{JuMP.Variable},
-    codeselect::Matrix{JuMP.Variable},
     outgroupnode::Int)
 
     const npop = pd.npop
     const leaves = getleaves(bt)
-    const codes = bt.codes
-    const dim = bt.depth 
     
     # one-to-one assignment
-    JuMP.@constraint(tree, [a=1:npop], sum(assign[a,leaves]) == 1)
-    JuMP.@constraint(tree, [n=leaves], sum(assign[1:npop,n]) <= 1)
-    # assign outgroup to a node
-    JuMP.@constraint(tree, assign[pd.outgroup,outgroupnode] == 1)
-    # binary encoding
     JuMP.@constraint(tree, 
-        [a=1:pd.npop,m=1:dim], 
-        codeselect[a,m] == sum(codes[u][m]*assign[a,u] for u in leaves))
+        [a=1:npop], 
+        sum(assign[a,leaves]) == 1)
+    JuMP.@constraint(tree, 
+        [n=getnodes(bt,bt.depth)], 
+        sum(assign[1:npop,n]) <= 1)
+    # assign outgroup to a node
+    JuMP.@constraint(tree, 
+        assign[pd.outgroup,outgroupnode] == 1)
 
 end
 
@@ -77,7 +85,6 @@ function countedgeconstraints(
     bt::BinaryTree,
     tree::JuMP.Model, 
     assign::JuMP.JuMPArray{JuMP.Variable},
-    codeselect::Matrix{JuMP.Variable},
     countedge::JuMP.JuMPDict{JuMP.Variable},
     outgroupnode::Int)
     
