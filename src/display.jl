@@ -1,7 +1,7 @@
 function printnodes(tp::Union{NodeTreeProblem,TreeProblem})
     for u in getnodes(tp.bt, tp.bt.depth), a in 1:tp.pd.npop
         level = round(sum(JuMP.getvalue(tp.assign[a,u,:])))/tp.nlevels
-        level > 0 && println(tp.pd.pops[a][1:2], "\t", u, "\t", level)
+        level > 0 && println(tp.pd.pops[a], "\t", u, "\t", level)
     end
 end
 
