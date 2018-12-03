@@ -6,9 +6,9 @@ function validtreeconstraints(
     outgroupnode::Int,
     nlevels::Int)
 
-    const npop = pd.npop
-    const levels = 1:nlevels
-    const leaves = getleaves(bt)
+    npop = pd.npop
+    levels = 1:nlevels
+    leaves = getleaves(bt)
     
     # one-to-one assignment
     JuMP.@constraint(tree, 

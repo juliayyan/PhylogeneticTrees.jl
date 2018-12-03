@@ -18,11 +18,11 @@ function TreeProblem(
     nlevels::Int = 1,
     solver = Gurobi.GurobiSolver())
     
-    const npop = pd.npop
-    const edges = bt.edges
-    const leaves = getleaves(bt)
-    const outgroupnode = leaves[1]
-    const levels = 1:nlevels
+    npop = pd.npop
+    edges = bt.edges
+    leaves = getleaves(bt)
+    outgroupnode = leaves[1]
+    levels = 1:nlevels
 
     tree = JuMP.Model(solver=solver)
     if binaryencoding 
@@ -65,8 +65,8 @@ function countedgeconstraints(
     outgroupnode::Int,
     nlevels::Int)
     
-    const npop = pd.npop
-    const levels = 1:nlevels
+    npop = pd.npop
+    levels = 1:nlevels
 
     for (u,v) in bt.edges 
         if in((u,v), bt.pathedges[outgroupnode,1])
@@ -104,9 +104,9 @@ function errorconstraints(pd::PopulationData,
     f3err::JuMP.JuMPDict{JuMP.Variable},
     nlevels::Int)
 
-    const npop = pd.npop 
-    const bigm = maximum(pd.f3)*2
-    const levels = 1:nlevels
+    npop = pd.npop 
+    bigm = maximum(pd.f3)*2
+    levels = 1:nlevels
 
     # set weight bilinear terms
     JuMP.@constraint(tree, 

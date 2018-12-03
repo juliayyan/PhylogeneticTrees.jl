@@ -8,9 +8,9 @@ end
 # warning: lots of magic constants here
 function printtree(tp::Union{NodeTreeProblem,TreeProblem})
 
-    const pd = tp.pd
-    const bt = tp.bt
-    const depth = bt.depth
+    pd = tp.pd
+    bt = tp.bt
+    depth = bt.depth
 
     spaces = Dict(zip(0:depth, [3 for i in 0:depth]))
     for d=(depth-1):-1:0

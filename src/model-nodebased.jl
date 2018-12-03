@@ -18,12 +18,12 @@ function NodeTreeProblem(
     nlevels::Int = 1,
     solver = Gurobi.GurobiSolver())
     
-    const npop = pd.npop
-    const edges = bt.edges
-    const leaves = getleaves(bt)
-    const outgroupnode = leaves[1]
-    const othernodes = leaves[2:end]
-    const levels = 1:nlevels
+    npop = pd.npop
+    edges = bt.edges
+    leaves = getleaves(bt)
+    outgroupnode = leaves[1]
+    othernodes = leaves[2:end]
+    levels = 1:nlevels
 
     tree = JuMP.Model(solver=solver)
     if binaryencoding
@@ -58,9 +58,9 @@ function logicalconstraints(
     outgroupnode::Int,
     nlevels::Int)
 
-    const npop = pd.npop
-    const othernodes = getleaves(bt)[2:end]
-    const levels = 1:nlevels
+    npop = pd.npop
+    othernodes = getleaves(bt)[2:end]
+    levels = 1:nlevels
     
     JuMP.@constraint(tree, [a=1:npop,b=a:npop,u=othernodes,v=othernodes,l=levels,m=levels],
         assign2[a,b,u,v,l,m] <= assign[a,u,l])
@@ -82,10 +82,10 @@ function errorconstraints(
     outgroupnode::Int,
     nlevels::Int)
 
-    const npop = pd.npop
-    const othernodes = getleaves(bt)[2:end]
-    const bigm = maximum(pd.f3)*2
-    const levels = 1:nlevels
+    npop = pd.npop
+    othernodes = getleaves(bt)[2:end]
+    bigm = maximum(pd.f3)*2
+    levels = 1:nlevels
 
     JuMP.@expression(tree,
         f3pathsum[u=othernodes,v=othernodes],
