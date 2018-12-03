@@ -2,7 +2,7 @@ module PhylogeneticTrees
 
     import JuMP, Gurobi, MathProgBase
     import LightGraphs
-    import CSV, Iterators, DataFrames
+    import CSV, IterTools, DataFrames
 
     include("tree.jl")
     include("popdata.jl")
