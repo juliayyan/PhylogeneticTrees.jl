@@ -3,6 +3,7 @@ module PhylogeneticTrees
     import JuMP, Gurobi, MathProgBase
     import LightGraphs
     import CSV, IterTools, DataFrames
+    import Printf
 
     include("tree.jl")
     include("popdata.jl")

@@ -30,7 +30,7 @@ function printtree(tp::Union{NodeTreeProblem,TreeProblem})
             else 
                 str = pd.pops[findfirst(nodeassign)][1:2]
             end
-            @printf("%2s", str)
+            Printf.@printf("%2s", str)
             print(" "^spaces[d])
         end
         println()
@@ -44,15 +44,15 @@ function printtree(tp::Union{NodeTreeProblem,TreeProblem})
                 weight2 = JuMP.getvalue(tp.weight[(n,getchildren(bt,n)[2])])
                 print(" "^(spaces[d]-3))
                 if round(weight1) > 0
-                    @printf("%3.0f", weight1)
+                    Printf.@printf("%3.0f", weight1)
                 else 
-                    @printf("%3s", " ")
+                    Printf.@printf("%3s", " ")
                 end
                 print(" "^2)
                 if round(weight2) > 0
-                    @printf("%3.0f", weight2)
+                    Printf.@printf("%3.0f", weight2)
                 else 
-                    @printf("%3s", " ")
+                    Printf.@printf("%3s", " ")
                 end
                 print(" "^(spaces[d]-3))
             end
