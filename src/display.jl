@@ -28,7 +28,7 @@ function printtree(tp::Union{NodeTreeProblem,TreeProblem})
             if sum(nodeassign) < 1 
                 str = "()"
             else 
-                str = pd.pops[findfirst(nodeassign)][1:2]
+                str = pd.pops[findfirst(nodeassign .> 0)][1:2]
             end
             Printf.@printf("%2s", str)
             print(" "^spaces[d])

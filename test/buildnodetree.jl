@@ -33,7 +33,7 @@ module BuildTree
             @test isapprox(getvalue(tp.assign[a,u,1]), 1) || isapprox(getvalue(tp.assign[a,u,1]), 0)
         end
 
-        xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])))] for a in 1:pd.npop] 
+        xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])) .> 0)] for a in 1:pd.npop] 
 
         @test isapprox(round(getvalue(tp.f3formula[1,1,xval[1],xval[1],1,1])), 482)
         @test isapprox(round(getvalue(tp.f3formula[1,2,xval[1],xval[2],1,1])), 33)

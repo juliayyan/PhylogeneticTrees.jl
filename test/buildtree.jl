@@ -36,7 +36,7 @@ module BuildTreeCoded
                   isapprox(getvalue(tp.countedge[a,b,(u,v),1,1]),0)
         end
 
-        xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])))] for a in 1:pd.npop] 
+        xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])) .> 0)] for a in 1:pd.npop] 
         @test isapprox(round(getvalue(tp.f3formula[1,1])), 482)
         @test isapprox(round(getvalue(tp.f3formula[1,2])), 33)
         @test isapprox(round(getvalue(tp.f3formula[2,2])), 242)
