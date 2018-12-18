@@ -23,7 +23,7 @@ module BuildTreeCoded
             solver = GurobiSolver(OutputFlag = 0),
             binaryencoding = true)
         @time solve(tp.model)
-        # 0.403986 seconds (148 allocations: 753.797 KiB)
+        # 4.973050 seconds (10.33 M allocations: 504.503 MiB, 6.76% gc time)
 
         leaves = PhylogeneticTrees.getnodes(bt, bt.depth)
 
