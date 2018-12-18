@@ -8,9 +8,9 @@ end
 # warning: lots of magic constants here
 function printtree(tp::Union{NodeTreeProblem,TreeProblem})
 
-    const pd = tp.pd
-    const bt = tp.bt
-    const depth = bt.depth
+    pd = tp.pd
+    bt = tp.bt
+    depth = bt.depth
 
     spaces = Dict(zip(0:depth, [3 for i in 0:depth]))
     for d=(depth-1):-1:0
@@ -28,9 +28,9 @@ function printtree(tp::Union{NodeTreeProblem,TreeProblem})
             if sum(nodeassign) < 1 
                 str = "()"
             else 
-                str = pd.pops[findfirst(nodeassign)][1:2]
+                str = pd.pops[findfirst(nodeassign .> 0)][1:2]
             end
-            @printf("%2s", str)
+            Printf.@printf("%2s", str)
             print(" "^spaces[d])
         end
         println()
@@ -44,15 +44,15 @@ function printtree(tp::Union{NodeTreeProblem,TreeProblem})
                 weight2 = JuMP.getvalue(tp.weight[(n,getchildren(bt,n)[2])])
                 print(" "^(spaces[d]-3))
                 if round(weight1) > 0
-                    @printf("%3.0f", weight1)
+                    Printf.@printf("%3.0f", weight1)
                 else 
-                    @printf("%3s", " ")
+                    Printf.@printf("%3s", " ")
                 end
                 print(" "^2)
                 if round(weight2) > 0
-                    @printf("%3.0f", weight2)
+                    Printf.@printf("%3.0f", weight2)
                 else 
-                    @printf("%3s", " ")
+                    Printf.@printf("%3s", " ")
                 end
                 print(" "^(spaces[d]-3))
             end

@@ -20,8 +20,8 @@ function breaksymmetries(tp::Union{NodeTreeProblem,TreeProblem};
             in(tp.outgroupnode, children) && continue
             left = children[1]; right = children[2]
             if round(sum(xval[:,left,1])) + round(sum(xval[:,right,1])) == 2
-                a = findfirst(xval[:,left,1])
-                b = findfirst(xval[:,right,1])
+                a = findfirst(xval[:,left,1] .> 0.1)
+                b = findfirst(xval[:,right,1] .> 0.1)
                 a <= b && continue
                 JuMP.@lazyconstraint(cb, 
                     sum(tp.assign[1:b,right,1]) + sum(tp.assign[(b+1):pd.npop,left,1]) <= 1)

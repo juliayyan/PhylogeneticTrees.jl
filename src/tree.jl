@@ -12,10 +12,10 @@ function BinaryTree(depth::Int)
     allcodes = Any[[-1],[0],[1]]
     codes = 0:1
     for d in 1:(depth-1) 
-        codes = collect(Iterators.product(codes,0:1))
+        codes = collect(IterTools.product(codes,0:1))
         push!(allcodes, codes)
     end
-    allcodes = vcat(allcodes...)
+    allcodes = vcat([vec(c) for c in allcodes]...)
     function flatten(arr)
         rst = Any[]
         grep(v) =   for x in v
