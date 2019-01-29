@@ -10,16 +10,24 @@ function validtreeconstraints(
     levels = 1:nlevels
     leaves = getleaves(bt)
     
-    # one-to-one assignment
-    JuMP.@constraint(tree, 
-        [a=1:npop], 
-        sum(assign[a,leaves,levels]) == nlevels)
-    JuMP.@constraint(tree, 
-        [n=getleaves(bt)], 
-        sum(assign[1:npop,n,1]) <= 1)
-    JuMP.@constraint(tree, 
-        [a=1:npop,n=leaves,l=2:nlevels], 
-        assign[a,n,l] <= assign[a,n,l-1])
+    # each population gets assigned levels
+    JuMP.@constraint(tree,
+        [a=1:npop,l=levels],
+        sum(assign[a,leaves,l]) == 1)
+    # each node gets at most one population
+    if nlevels > 1
+        JuMP.@variable(tree, assign1[1:npop,leaves] >= 0)
+        JuMP.@constraint(tree,
+            [a=1:npop,n=leaves,l=levels],
+            assign1[a,n] >= assign[a,n,l])
+        JuMP.@constraint(tree,
+            [n=leaves],
+            sum(assign1[a,n] for a in 1:npop) <= 1)
+    else 
+        JuMP.@constraint(tree,
+            [n=leaves],
+            sum(assign[1:npop,n,1]) <= 1)
+    end
     # assign outgroup to a node
     JuMP.@constraint(tree, 
         [l=levels], 
@@ -55,7 +63,9 @@ end
 
 # fixes population a to be un-admixed
 function unmix(tp::Union{NodeTreeProblem,TreeProblem}, a::Int)
-    JuMP.@constraint(tp.model, sum(tp.assign[a,:,1]) == 1)
+    JuMP.@constraint(tp.model, 
+        [n=getleaves(bt),l=2:tp.levels],
+        tp.assign[a,n,l] == tp.assign[a,n,l-1])
 end
 
 # fixes population a to node u
