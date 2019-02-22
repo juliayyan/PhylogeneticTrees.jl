@@ -16,6 +16,7 @@ function TreeProblem(
     bt::BinaryTree;
     binaryencoding::Bool = false,
     nlevels::Int = 1,
+    nmixtures::Int = pd.npop,
     solver = Gurobi.GurobiSolver())
     
     npop = pd.npop
@@ -40,7 +41,7 @@ function TreeProblem(
         sum(weightaux[a,b,edg,l,m] for edg in edges, l in levels, m in levels)/nlevels^2)
     JuMP.@variable(tree, f3err[a=1:npop,b=a:npop])
 
-    validtreeconstraints(pd, bt, tree, assign, outgroupnode, nlevels)
+    validtreeconstraints(pd, bt, tree, assign, outgroupnode, nlevels, nmixtures)
     countedgeconstraints(pd, bt, tree, assign, countedge, outgroupnode, nlevels)
     errorconstraints(pd, bt, tree, weight, weightaux, countedge, f3formula, f3err, nlevels)
 
