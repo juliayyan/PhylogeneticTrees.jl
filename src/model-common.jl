@@ -4,7 +4,8 @@ function validtreeconstraints(
     tree::JuMP.Model, 
     assign::JuMP.JuMPArray{JuMP.Variable},
     outgroupnode::Int,
-    nlevels::Int)
+    nlevels::Int,
+    nmixtures::Int)
 
     npop = pd.npop
     levels = 1:nlevels
@@ -23,6 +24,8 @@ function validtreeconstraints(
         JuMP.@constraint(tree,
             [n=leaves],
             sum(assign1[a,n] for a in 1:npop) <= 1)
+        JuMP.@constraint(tree,
+            sum(assign1) <= nmixtures)
     else 
         JuMP.@constraint(tree,
             [n=leaves],

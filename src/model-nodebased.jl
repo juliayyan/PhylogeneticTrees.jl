@@ -16,6 +16,7 @@ function NodeTreeProblem(
     bt::BinaryTree;
     binaryencoding::Bool = false,
     nlevels::Int = 1,
+    nmixtures::Int = pd.npop,
     solver = Gurobi.GurobiSolver())
     
     npop = pd.npop
@@ -38,7 +39,7 @@ function NodeTreeProblem(
     JuMP.@variable(tree, f3formula[a=1:npop,b=a:npop,u=othernodes,v=othernodes,levels,levels] >= 0)
     JuMP.@variable(tree, f3err[a=1:npop,b=a:npop])
  
-    validtreeconstraints(pd, bt, tree, assign, outgroupnode, nlevels)
+    validtreeconstraints(pd, bt, tree, assign, outgroupnode, nlevels, nmixtures)
     logicalconstraints(pd, bt, tree, assign, assign2, outgroupnode, nlevels)
     errorconstraints(pd, bt, tree, assign2, weight, f3formula, f3err, outgroupnode, nlevels)
     
