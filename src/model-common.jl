@@ -67,7 +67,7 @@ end
 # fixes population a to be un-admixed
 function unmix(tp::Union{NodeTreeProblem,TreeProblem}, a::Int)
     JuMP.@constraint(tp.model, 
-        [n=getleaves(bt),l=2:tp.levels],
+        [n=getleaves(tp.bt),l=2:tp.levels],
         tp.assign[a,n,l] == tp.assign[a,n,l-1])
 end
 
