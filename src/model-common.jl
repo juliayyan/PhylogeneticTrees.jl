@@ -61,6 +61,7 @@ function warmstartunmixed(tp::Union{NodeTreeProblem,TreeProblem};
     solution0 = JuMP.getvalue(tp0.assign);
     for a in 1:tp.pd.npop, u in getnodes(tp.bt, tp.bt.depth), l in 1:tp.nlevels 
         JuMP.setvalue(tp.assign[a,u,l], JuMP.getvalue(tp0.assign[a,u,1]))
+        JuMP.setvalue(tp.model[:assign1][a,u], JuMP.getvalue(tp0.assign[a,u,1]))
     end
 end
 
