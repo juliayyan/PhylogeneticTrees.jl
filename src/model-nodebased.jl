@@ -117,12 +117,8 @@ function errorconstraints(
         [a=1:npop,b=a:npop,u=othernodes,v=othernodes,l=levels,m=levels],
         f3formula[a,b,u,v,l,m] <= f3pathsum[u,v])
     JuMP.@constraint(tree, [a=1:npop,b=a:npop],
-        f3err[a,b] >= pd.f3[a,b] - 
+        f3err[a,b] == pd.f3[a,b] - 
                       sum(f3formula[a,b,u,v,l,m] 
                           for u=othernodes,v=othernodes,l=levels,m=levels)/nlevels^2)
-    JuMP.@constraint(tree, [a=1:npop,b=a:npop],
-        f3err[a,b] >= sum(f3formula[a,b,u,v,l,m] 
-                          for u=othernodes,v=othernodes,l=levels,m=levels)/nlevels^2 - 
-                      pd.f3[a,b])
 
 end 
