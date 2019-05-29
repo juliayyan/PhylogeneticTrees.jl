@@ -37,6 +37,8 @@ function PopulationData(
         b2 = max(popinds[covdat[i,:A2]],popinds[covdat[i,:B2]])
         cov[a1,b1,a2,b2] = covdat[i,:covariance]
         cov[b1,a1,b2,a2] = covdat[i,:covariance]
+        cov[a2,b2,a1,b1] = covdat[i,:covariance]
+        cov[b2,a2,b1,a1] = covdat[i,:covariance]
     end
 
     PopulationData(pops,npop,outgroup,f3,cov)
