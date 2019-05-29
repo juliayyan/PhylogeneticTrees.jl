@@ -23,7 +23,7 @@ module BuildTreeCoded
             solver = GurobiSolver(OutputFlag = 0),
             binaryencoding = true)
         @time solve(tp.model)
-        # 4.973050 seconds (10.33 M allocations: 504.503 MiB, 6.76% gc time)
+        # 5.566190 seconds (10.90 M allocations: 532.489 MiB, 5.85% gc time)
 
         leaves = PhylogeneticTrees.getnodes(bt, bt.depth)
 
@@ -38,9 +38,9 @@ module BuildTreeCoded
         end
 
         xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])) .> 0)] for a in 1:pd.npop] 
-        @test isapprox(round(getvalue(tp.f3formula[1,1])), 482)
+        @test isapprox(round(getvalue(tp.f3formula[1,1])), 478)
         @test isapprox(round(getvalue(tp.f3formula[1,2])), 33)
-        @test isapprox(round(getvalue(tp.f3formula[2,2])), 242)
+        @test isapprox(round(getvalue(tp.f3formula[2,2])), 247)
         for a in 1:pd.npop, b in a:pd.npop, u in leaves, v in leaves 
             if round(getvalue(tp.assign[a,u,1]) + getvalue(tp.assign[b,v,1])) == 2
                 for (u1,v1) in bt.edges 
@@ -52,9 +52,9 @@ module BuildTreeCoded
                     end
                 end
             end
-        end        
+        end
 
-        @test isapprox(getobjectivevalue(tp.model), 302.06620671623)
+        @test isapprox(getobjectivevalue(tp.model), 267.7057665969791)
 
     end
 
