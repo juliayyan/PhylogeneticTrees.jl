@@ -24,7 +24,7 @@ module BuildTree
             solver = GurobiSolver(OutputFlag = 0))
         PhylogeneticTrees.breaksymmetries(tp, rules = [:leftfirst, :alphabetize])
         @time solve(tp.model)
-        # 10.053197 seconds (2.07 M allocations: 107.326 MiB, 0.48% gc time)
+        # 12.707202 seconds (18.43 k allocations: 3.351 MiB, 0.11% gc time)
 
         leaves = PhylogeneticTrees.getnodes(bt, bt.depth)
 
@@ -35,27 +35,23 @@ module BuildTree
 
         xval = [leaves[findfirst(round.(getvalue(tp.assign[a,:,1])) .> 0)] for a in 1:pd.npop] 
 
-        @test isapprox(round(getvalue(tp.f3formula[1,1,xval[1],xval[1],1,1])), 482)
+        @test isapprox(round(getvalue(tp.f3formula[1,1,xval[1],xval[1],1,1])), 478)
         @test isapprox(round(getvalue(tp.f3formula[1,2,xval[1],xval[2],1,1])), 33)
-        @test isapprox(round(getvalue(tp.f3formula[2,2,xval[2],xval[2],1,1])), 242)
+        @test isapprox(round(getvalue(tp.f3formula[2,2,xval[2],xval[2],1,1])), 247)
         for a in 1:pd.npop, b in a:pd.npop, u in leaves, v in leaves 
             u == tp.outgroupnode && continue 
             v == tp.outgroupnode && continue 
             xval[a] == u && continue 
             xval[b] == v && continue 
-            @test isapprox(getvalue(tp.f3formula[a,b,u,v,1,1]), 0)
+            @test isapprox(getvalue(tp.f3formula[a,b,u,v,1,1]), 0, atol=1e-4)
         end
 
-        @test isapprox(getobjectivevalue(tp.model), 302.06620671623)
+        @test isapprox(getobjectivevalue(tp.model), 267.7057665969791)
 
         PhylogeneticTrees.removesolution(tp, getvalue(tp.assign))
         @time solve(tp.model)
-        # 9.538941 seconds (28.87 k allocations: 2.222 MiB)
-        @test isapprox(getobjectivevalue(tp.model), 302.06620671623) # symmetric solution
-        PhylogeneticTrees.removesolution(tp, getvalue(tp.assign))
-        @time solve(tp.model)
-        @test isapprox(getobjectivevalue(tp.model), 545.6614084929685) # new solution
-        # 10.924954 seconds (13.26 k allocations: 1.406 MiB)
+        # 13.446876 seconds (35.10 k allocations: 2.273 MiB)
+        @test isapprox(getobjectivevalue(tp.model), 267.70576659697684, atol=1e-4) # symmetric solution
 
     end
 

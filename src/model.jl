@@ -45,9 +45,23 @@ function TreeProblem(
     countedgeconstraints(pd, bt, tree, assign, countedge, outgroupnode, nlevels)
     errorconstraints(pd, bt, tree, weight, weightaux, countedge, f3formula, f3err, nlevels)
 
+    keytoind = Dict()
+    ind = 0
+    for key in keys(f3err)
+        key[1] == pd.outgroup && continue
+        key[2] == pd.outgroup && continue
+        ind += 1
+        keytoind[key] = ind
+    end
+    mat = zeros(ind,ind)
+    for (a1,b1) in keys(keytoind), (a2,b2) in keys(keytoind)
+        mat[keytoind[a1,b1],keytoind[a2,b2]] = pd.cov[a1,b1,a2,b2]
+    end
+    matinv = inv(mat)
+    
     JuMP.@objective(tree, Min, 
-        sum(pd.cov[a1,b1,a2,b2]*f3err[a1,b1]*f3err[a2,b2] 
-            for a1 in 1:npop, a2 in 1:npop, b1 in a1:npop, b2 in a2:npop))
+        sum(matinv[keytoind[a1,b1],keytoind[a2,b2]]*f3err[a1,b1]*f3err[a2,b2]
+            for (a1,b1) in keys(keytoind), (a2,b2) in keys(keytoind)))
 
     TreeProblem(
         pd, bt, outgroupnode, nlevels,
@@ -122,8 +136,6 @@ function errorconstraints(pd::PopulationData,
 
     # set error terms
     JuMP.@constraint(tree, [a=1:npop,b=a:npop],
-        f3err[a,b] >= pd.f3[a,b] - f3formula[a,b])
-    JuMP.@constraint(tree, [a=1:npop,b=a:npop],
-        f3err[a,b] >= f3formula[a,b] - pd.f3[a,b])
-
+        f3err[a,b] == pd.f3[a,b] - f3formula[a,b])
+    
 end
