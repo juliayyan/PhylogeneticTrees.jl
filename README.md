@@ -1,13 +1,13 @@
 # PhylogeneticTrees.jl
 
-PhylogeneticTrees is a package implementing miqoGraph, a fast algorithm to fit admixture trees using mixed-integer quadratic optimization.  It was developed using the [Julia]("http://julialang.org/") language and the [Gurobi]("http://www.gurobi.com/") optimization solver.
+PhylogeneticTrees is a package implementing miqoGraph, a fast algorithm to fit admixture trees using mixed-integer quadratic optimization.  It was developed using the [Julia](http://julialang.org/) language and the [Gurobi](http://www.gurobi.com/) optimization solver.
 
 ----
 ## Installation
 
-PhylogeneticTrees is implemented using the Gurobi optimization solver, which has a [free academic license]("http://www.gurobi.com/registration/academic-license-reg").  The instructions for installation can be found [here]("http://www.gurobi.com/documentation/").
+PhylogeneticTrees is implemented using the Gurobi optimization solver, which has a [free academic license](http://www.gurobi.com/registration/academic-license-reg).  The instructions for installation can be found [here](http://www.gurobi.com/documentation/).
 
-The Julia language can be downloaded [here]("https://julialang.org/downloads/").
+The Julia language can be downloaded [here](https://julialang.org/downloads/).
 
 PhylogeneticTrees can be installed through the Julia package manager:
 
