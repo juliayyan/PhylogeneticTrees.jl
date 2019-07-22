@@ -5,11 +5,11 @@ PhylogeneticTrees is a package implementing miqoGraph, a fast algorithm to fit a
 ----
 ## Installation
 
-PhylogeneticTrees is implemented using the Gurobi optimization solver, which has a [free academic license](http://www.gurobi.com/registration/academic-license-reg).  The instructions for installation can be found [here](http://www.gurobi.com/documentation/).
+PhylogeneticTrees is implemented using the Gurobi optimization solver, which has a [free academic license](http://www.gurobi.com/registration/academic-license-reg).  The instructions for installation can be found [here](http://www.gurobi.com/documentation/).  Non-academic users can alternatively substitute Gurobi with a variety of free solvers, such as [Cbc](https://github.com/JuliaOpt/Cbc.jl).
 
 The Julia language can be downloaded [here](https://julialang.org/downloads/).
 
-PhylogeneticTrees can be installed through the Julia package manager:
+PhylogeneticTrees can be installed through the Julia [package manager](https://docs.julialang.org/en/v1/stdlib/Pkg/index.html):
 
 ```
 (v1.0) pkg> add "https://github.com/juliayyan/PhylogeneticTrees.jl" 
@@ -23,7 +23,7 @@ To check that the installation is working properly, run the following within the
 
 **NOTE**.  The dependencies for PhylogeneticTrees include JuMP (v0.18.5), Gurobi, CSV (v0.4.3), DataFrames (v0.17.1), and LightGraphs.  Newer or older versions of these packages may cause errors.  To install a specific version of these packages, you can use the following commands:
 
-```
+```julia
 (v1.0) pkg> add JuMP@0.18.5
 ```
 
