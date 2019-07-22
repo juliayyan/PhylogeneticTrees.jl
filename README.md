@@ -21,9 +21,23 @@ To check that the installation is working properly, run the following within the
 (v1.0) pkg> test PhylogeneticTrees
 ```
 
+**NOTE**.  The dependencies for PhylogeneticTrees include JuMP (v0.18.5), Gurobi, CSV (v0.4.3), DataFrames (v0.17.1), and LightGraphs.  Newer or older versions of these packages may cause errors.  To install a specific version of these packages, you can use the following commands:
+
+```
+(v1.0) pkg> add JuMP@0.18.5
+```
+
+```
+(v1.0) pkg> add CSV@0.4.3
+```
+
+```
+(v1.0) pkg> add DataFrames@0.17.1
+```
+
 ----
 ## Usage
-Examples can be found in the test/ directory.
+Example code and datasets can be found in the test/ directory.
 
 ----
 ## Citing PhylogeneticTrees
