@@ -74,7 +74,7 @@ end
 
 # fixes pop to be un-admixed
 function unmix(tp::Union{NodeTreeProblem,TreeProblem}, pop::String)
-    a = findfirst(pd.pops .== pop)
+    a = findfirst(tp.pd.pops .== pop)
     if a == nothing
         @error("Invalid population $(pop)")
     else
@@ -91,7 +91,7 @@ end
 
 # fixes pop to node u
 function fix(tp::Union{NodeTreeProblem,TreeProblem}, pop::String, u::Int)
-    a = findfirst(pd.pops .== pop)
+    a = findfirst(tp.pd.pops .== pop)
     if a == nothing
         @error("Invalid population $(pop)")
     else
