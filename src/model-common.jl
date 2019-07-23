@@ -72,11 +72,31 @@ function unmix(tp::Union{NodeTreeProblem,TreeProblem}, a::Int)
         tp.assign[a,n,l] == tp.assign[a,n,l-1])
 end
 
+# fixes pop to be un-admixed
+function unmix(tp::Union{NodeTreeProblem,TreeProblem}, pop::String)
+    a = findfirst(tp.pd.pops .== pop)
+    if a == nothing
+        @error("Invalid population $(pop)")
+    else
+        unmix(tp, a)
+    end
+end
+
 # fixes population a to node u
 function fix(tp::Union{NodeTreeProblem,TreeProblem}, a::Int, u::Int)
     JuMP.@constraint(tp.model, 
         [l=1:tp.nlevels],
         tp.assign[a,u,l] == 1)
+end
+
+# fixes pop to node u
+function fix(tp::Union{NodeTreeProblem,TreeProblem}, pop::String, u::Int)
+    a = findfirst(tp.pd.pops .== pop)
+    if a == nothing
+        @error("Invalid population $(pop)")
+    else
+        fix(tp, a, u)
+    end
 end
 
 function removesolution(
