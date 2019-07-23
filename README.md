@@ -5,9 +5,9 @@ PhylogeneticTrees is a package implementing miqoGraph, a fast algorithm to fit a
 ----
 ## Installation
 
-PhylogeneticTrees is implemented using the Gurobi optimization solver, which has a [free academic license](http://www.gurobi.com/registration/academic-license-reg).  The instructions for installation can be found [here](http://www.gurobi.com/documentation/).  Non-academic users can alternatively substitute Gurobi with a variety of free solvers, such as [Cbc](https://github.com/JuliaOpt/Cbc.jl).
+PhylogeneticTrees is implemented using the Gurobi optimization solver, which has a [free academic license](http://www.gurobi.com/registration/academic-license-reg).  The instructions for installation can be found [here](http://www.gurobi.com/documentation/).
 
-The Julia language can be downloaded [here](https://julialang.org/downloads/).
+The Julia language can be downloaded [here](https://julialang.org/downloads/).  This package was developed using Julia 1.0.
 
 PhylogeneticTrees can be installed through the Julia [package manager](https://docs.julialang.org/en/v1/stdlib/Pkg/index.html):
 
