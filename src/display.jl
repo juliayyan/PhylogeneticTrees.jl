@@ -1,7 +1,18 @@
-function printnodes(tp::Union{NodeTreeProblem,TreeProblem})
+function printnodes(tp::Union{NodeTreeProblem,TreeProblem};
+    outfile::String = "")
+    output = ""
     for u in getnodes(tp.bt, tp.bt.depth), a in 1:tp.pd.npop
         level = round(sum(JuMP.getvalue(tp.assign[a,u,:])))/tp.nlevels
-        level > 0 && println(tp.pd.pops[a], "\t", u, "\t", level)
+        if level > 0
+            output = string(output, string(tp.pd.pops[a], "\t", u, "\t", level, "\n"))
+        end 
+    end
+    if outfile == ""
+        print(output)
+    else
+        open(outfile, "w") do f
+            write(f, output)
+        end
     end
 end
 
