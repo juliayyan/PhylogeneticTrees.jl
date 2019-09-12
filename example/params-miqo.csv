@@ -1,0 +1,12 @@
+param,value
+mean_file,f3.real.americas.csv
+cov_file,f3.real.americas.covariance.csv
+output_file,output.txt
+log_file,log.txt
+time_limit,120
+warm_start,1
+warm_start_time_limit,30
+depth,3
+granularity,2
+admixture_events,1
+unmixed_pops,ANE Altai Dai Mbuti Onge

@@ -1,0 +1,7 @@
+Altai	8	1.0
+Mbuti	9	1.0
+ANE	10	1.0
+Karitiana	11	0.5
+Karitiana	12	0.5
+Dai	13	1.0
+Onge	15	1.0
