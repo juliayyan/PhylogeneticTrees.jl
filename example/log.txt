@@ -1,0 +1,94 @@
+
+Gurobi 8.1.1 (win64) logging started 09/12/19 12:45:16
+
+
+Gurobi 8.1.1 (win64) logging started 09/12/19 12:45:16
+
+Optimize a model with 1800 rows, 671 columns and 5224 nonzeros
+Model has 120 quadratic objective terms
+Variable types: 623 continuous, 48 integer (48 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 2e+03]
+  Objective range  [0e+00, 0e+00]
+  QObjective range [2e-02, 8e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+03]
+Found heuristic solution: objective 139142.04022
+Presolve removed 1193 rows and 397 columns
+Presolve time: 0.01s
+Presolved: 607 rows, 274 columns, 1770 nonzeros
+Presolved model has 120 quadratic objective terms
+Variable types: 214 continuous, 60 integer (60 binary)
+
+Root relaxation: objective 0.000000e+00, 297 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   32 139142.040    0.00000   100%     -    0s
+H    0     0                    9322.9713073    0.00000   100%     -    0s
+     0     0    0.00000    0   34 9322.97131    0.00000   100%     -    0s
+H    0     0                    8583.8728639    0.00000   100%     -    0s
+     0     0    0.00000    0   38 8583.87286    0.00000   100%     -    0s
+     0     0    0.00000    0   38 8583.87286    0.00000   100%     -    0s
+H    0     0                    1277.9830689    0.00000   100%     -    0s
+     0     2    0.00000    0   38 1277.98307    0.00000   100%     -    0s
+*   41    11              12     747.1832373    0.00000   100%  46.5    0s
+*   60    11              11     646.1118263    4.44897  99.3%  45.7    0s
+
+Cutting planes:
+  Gomory: 2
+
+Explored 99 nodes (4426 simplex iterations) in 0.46 seconds
+Thread count was 8 (of 8 available processors)
+
+Solution count 6: 646.112 747.183 1277.98 ... 139142
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 6.461118262621e+02, best bound 6.461118262621e+02, gap 0.0000%
+
+Gurobi 8.1.1 (win64) logging started 09/12/19 12:45:17
+
+
+Gurobi 8.1.1 (win64) logging started 09/12/19 12:45:17
+
+Optimize a model with 7236 rows, 2531 columns and 21199 nonzeros
+Model has 120 quadratic objective terms
+Variable types: 2435 continuous, 96 integer (96 binary)
+Coefficient statistics:
+  Matrix range     [3e-01, 2e+03]
+  Objective range  [0e+00, 0e+00]
+  QObjective range [2e-02, 8e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+03]
+
+Loaded MIP start with objective 646.112
+
+Presolve removed 6333 rows and 2151 columns
+Presolve time: 0.03s
+Presolved: 903 rows, 380 columns, 2639 nonzeros
+Presolved model has 120 quadratic objective terms
+Variable types: 308 continuous, 72 integer (72 binary)
+
+Root relaxation: objective 0.000000e+00, 413 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   39  646.11183    0.00000   100%     -    0s
+     0     0    0.00000    0   40  646.11183    0.00000   100%     -    0s
+     0     0    0.00000    0   40  646.11183    0.00000   100%     -    0s
+     0     2    0.00000    0   40  646.11183    0.00000   100%     -    0s
+*   62    15              14     235.4132541    0.00000   100%  51.1    0s
+H   64    14                      31.4910943    0.00000   100%  51.7    0s
+
+Cutting planes:
+  Gomory: 1
+
+Explored 272 nodes (19173 simplex iterations) in 0.56 seconds
+Thread count was 8 (of 8 available processors)
+
+Solution count 3: 31.4911 235.413 646.112 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 3.149109432409e+01, best bound 3.149109432409e+01, gap 0.0000%
