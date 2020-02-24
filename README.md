@@ -41,3 +41,17 @@ Example code and datasets can be found in the test/ directory.
 
 ----
 ## Citing PhylogeneticTrees
+
+Our paper describing the models in this package can be found on [bioRxiv](https://www.biorxiv.org/content/10.1101/801548v1).  Documentation is in the supplementary material.  If you find it useful in your work, we kindly request that you cite the following preprint:
+
+@article{ynp2019,
+  author = {Yan, Julia and Patterson, Nick and Narasimhan, Vagheesh},
+	title = {miqoGraph: Fitting admixture graphs using mixed-integer quadratic optimization},
+	elocation-id = {801548},
+	year = {2019},
+	doi = {10.1101/801548},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2019/10/11/801548},
+	eprint = {https://www.biorxiv.org/content/early/2019/10/11/801548.full.pdf},
+	journal = {bioRxiv}
+}
