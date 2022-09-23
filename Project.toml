@@ -1,0 +1,16 @@
+name = "PhylogeneticTrees"
+uuid = "aa211f34-1217-4574-bbdd-458d83827b5c"
+
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Gurobi = "2e9cd046-0924-5485-92f1-d5272153d98b"
+IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
+MathProgBase = "fdba3010-5040-5b88-9595-932c9decdf73"
+
+[compat]
+JuMP = "≥0.18.5"
+CSV = "≥0.4.3"
+DataFrames = "≥0.17.1"
