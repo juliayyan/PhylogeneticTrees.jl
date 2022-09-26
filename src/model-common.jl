@@ -2,7 +2,7 @@ function validtreeconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign::JuMP.Containers.DenseAxisArray{JuMP.Variable},
+    assign::JuMP.Containers.DenseAxisArray,
     outgroupnode::Int,
     nlevels::Int,
     nmixtures::Int)
@@ -43,7 +43,7 @@ function binaryencodingconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model,
-    assign::JuMP.Containers.DenseAxisArray{JuMP.Variable})
+    assign::JuMP.Containers.DenseAxisArray)
 
     JuMP.@variable(tree, codeselect[1:pd.npop,1:bt.depth], Bin)
     JuMP.@constraint(tree, 

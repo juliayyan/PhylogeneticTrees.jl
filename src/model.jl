@@ -4,11 +4,11 @@ mutable struct TreeProblem
     outgroupnode::Int
     nlevels::Int
     model::JuMP.Model
-    assign::JuMP.Containers.DenseAxisArray{JuMP.Variable}
-    countedge::JuMP.Containers.SparseAxisArray{JuMP.Variable}
-    weight::JuMP.Containers.DenseAxisArray{JuMP.Variable}
+    assign::JuMP.Containers.DenseAxisArray
+    countedge::JuMP.Containers.SparseAxisArray
+    weight::JuMP.Containers.DenseAxisArray
     f3formula::JuMP.Containers.SparseAxisArray{JuMP.GenericAffExpr{Float64,JuMP.Variable}}
-    f3err::JuMP.Containers.SparseAxisArray{JuMP.Variable}
+    f3err::JuMP.Containers.SparseAxisArray
 end 
 
 function TreeProblem(
@@ -75,8 +75,8 @@ function countedgeconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign::JuMP.Containers.DenseAxisArray{JuMP.Variable},
-    countedge::JuMP.Containers.SparseAxisArray{JuMP.Variable},
+    assign::JuMP.Containers.DenseAxisArray,
+    countedge::JuMP.Containers.SparseAxisArray,
     outgroupnode::Int,
     nlevels::Int)
     
@@ -112,11 +112,11 @@ end
 function errorconstraints(pd::PopulationData, 
     bt::BinaryTree, 
     tree::JuMP.Model, 
-    weight::JuMP.Containers.DenseAxisArray{JuMP.Variable}, 
-    weightaux::JuMP.Containers.SparseAxisArray{JuMP.Variable}, 
-    countedge::JuMP.Containers.SparseAxisArray{JuMP.Variable}, 
+    weight::JuMP.Containers.DenseAxisArray, 
+    weightaux::JuMP.Containers.SparseAxisArray, 
+    countedge::JuMP.Containers.SparseAxisArray, 
     f3formula::JuMP.Containers.SparseAxisArray{JuMP.GenericAffExpr{Float64,JuMP.Variable}}, 
-    f3err::JuMP.Containers.SparseAxisArray{JuMP.Variable},
+    f3err::JuMP.Containers.SparseAxisArray,
     nlevels::Int)
 
     npop = pd.npop 
