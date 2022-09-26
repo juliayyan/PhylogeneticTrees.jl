@@ -2,7 +2,7 @@ function validtreeconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign::JuMP.JuMPArray{JuMP.Variable},
+    assign::JuMP.Containers.DenseAxisArray{JuMP.Variable},
     outgroupnode::Int,
     nlevels::Int,
     nmixtures::Int)

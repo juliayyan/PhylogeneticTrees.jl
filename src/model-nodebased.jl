@@ -5,10 +5,10 @@ mutable struct NodeTreeProblem
     nlevels::Int
     model::JuMP.Model
     assign::JuMP.JuMPArray{JuMP.Variable}
-    assign2::JuMP.JuMPDict{JuMP.Variable}
+    assign2::JuMP.Containers.SparseAxisArray{JuMP.Variable}
     weight::JuMP.JuMPArray{JuMP.Variable}
-    f3formula::JuMP.JuMPDict{JuMP.Variable}
-    f3err::JuMP.JuMPDict{JuMP.Variable}
+    f3formula::JuMP.Containers.SparseAxisArray{JuMP.Variable}
+    f3err::JuMP.Containers.SparseAxisArray{JuMP.Variable}
 end 
 
 function NodeTreeProblem(
@@ -69,7 +69,7 @@ function logicalconstraints(
     bt::BinaryTree,
     tree::JuMP.Model, 
     assign::JuMP.JuMPArray{JuMP.Variable},
-    assign2::JuMP.JuMPDict{JuMP.Variable},
+    assign2::JuMP.Containers.SparseAxisArray{JuMP.Variable},
     outgroupnode::Int,
     nlevels::Int)
 
@@ -90,10 +90,10 @@ function errorconstraints(
     pd::PopulationData, 
     bt::BinaryTree,
     tree::JuMP.Model, 
-    assign2::JuMP.JuMPDict{JuMP.Variable},
+    assign2::JuMP.Containers.SparseAxisArray{JuMP.Variable},
     weight::JuMP.JuMPArray{JuMP.Variable},
-    f3formula::JuMP.JuMPDict{JuMP.Variable},
-    f3err::JuMP.JuMPDict{JuMP.Variable},
+    f3formula::JuMP.Containers.SparseAxisArray{JuMP.Variable},
+    f3err::JuMP.Containers.SparseAxisArray{JuMP.Variable},
     outgroupnode::Int,
     nlevels::Int)
 

@@ -5,10 +5,10 @@ mutable struct TreeProblem
     nlevels::Int
     model::JuMP.Model
     assign::JuMP.JuMPArray{JuMP.Variable}
-    countedge::JuMP.JuMPDict{JuMP.Variable}
+    countedge::JuMP.Containers.SparseAxisArray{JuMP.Variable}
     weight::JuMP.JuMPArray{JuMP.Variable}
-    f3formula::JuMP.JuMPDict{JuMP.GenericAffExpr{Float64,JuMP.Variable}}
-    f3err::JuMP.JuMPDict{JuMP.Variable}
+    f3formula::JuMP.Containers.SparseAxisArray{JuMP.GenericAffExpr{Float64,JuMP.Variable}}
+    f3err::JuMP.Containers.SparseAxisArray{JuMP.Variable}
 end 
 
 function TreeProblem(
@@ -76,7 +76,7 @@ function countedgeconstraints(
     bt::BinaryTree,
     tree::JuMP.Model, 
     assign::JuMP.JuMPArray{JuMP.Variable},
-    countedge::JuMP.JuMPDict{JuMP.Variable},
+    countedge::JuMP.Containers.SparseAxisArray{JuMP.Variable},
     outgroupnode::Int,
     nlevels::Int)
     
@@ -113,10 +113,10 @@ function errorconstraints(pd::PopulationData,
     bt::BinaryTree, 
     tree::JuMP.Model, 
     weight::JuMP.JuMPArray{JuMP.Variable}, 
-    weightaux::JuMP.JuMPDict{JuMP.Variable}, 
-    countedge::JuMP.JuMPDict{JuMP.Variable}, 
-    f3formula::JuMP.JuMPDict{JuMP.GenericAffExpr{Float64,JuMP.Variable}}, 
-    f3err::JuMP.JuMPDict{JuMP.Variable},
+    weightaux::JuMP.Containers.SparseAxisArray{JuMP.Variable}, 
+    countedge::JuMP.Containers.SparseAxisArray{JuMP.Variable}, 
+    f3formula::JuMP.Containers.SparseAxisArray{JuMP.GenericAffExpr{Float64,JuMP.Variable}}, 
+    f3err::JuMP.Containers.SparseAxisArray{JuMP.Variable},
     nlevels::Int)
 
     npop = pd.npop 
